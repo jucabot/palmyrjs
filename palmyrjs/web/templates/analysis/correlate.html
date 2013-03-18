@@ -36,15 +36,13 @@
 				<div class="span9">
 					 	
 					 	<div class="row-fluid">
-					 	<form class="form-search" id="query-form">
-					 		<div class="input-append span7">
-							  <input id="query" type="text" class="input-xxlarge search-query" placeholder="Enter your query here" value="{{ query }}" data-provide="typeahead">
+					 	<form class="form-inline" id="query-form">
+					 		<div class="input-append">
+							  <input id="query" type="text" class="input-xxlarge" placeholder="Enter your query here" value="{{ query }}" data-provide="typeahead">
 							  <button type="submit" class="btn btn-primary btn-long">Query</button>
-							  
+							  <button class="btn btn-long" href="#add-filter" role="button" data-toggle="modal">Filter...</button>
 							</div>
-						  	<div class="span2 pull-right">
-								<button class="btn btn-primary btn-long" href="#add-filter" role="button" data-toggle="modal">Filter...</button>
-							</div>
+						  	
 						</form>
 	</div>
 						
@@ -56,6 +54,7 @@
 					<div class="well sidebar-nav" id="saved-query-list">
 						<ul  class="nav nav-list">
 						  <li class="nav-header">Actions</li>
+						  	<li><a href="#" onclick=""><i class="icon-edit"></i>Edit...</a></li>
 						  	<li><a href="#" onclick=""><i class="icon-star-empty"></i>Bookmark</a></li>
 						  	<li><a href="#" onclick=""><i class="icon-picture"></i>Export as image</a></li>
 						  	<li><a href="#" onclick=""><i class="icon-download"></i>Export to Excel</a></li>
@@ -63,11 +62,17 @@
 						  	<li><a href="#" onclick=""><i class="icon-tags"></i>Dash...</a></li>
 						  	
 
-						  <li class="nav-header">Saved queries</li>
+						  <li class="nav-header">Bookmarks</li>
 						  {% for query in ftable.queries %}
-						  	<li><a href="#" onclick=""></a></li>
+						  	<li><span><a href="#" onclick=""></a> <i class="icon-remove"></i></li>
 						  {% endfor %}
 						  <li><span><a href="#" onclick="">age by survived</a> <i class="icon-remove"></i></span></li>
+						  
+						  <li class="nav-header">Filters</li>
+						  {% for query in ftable.filters %}
+						  	<li><span><a href="#" onclick=""></a> <i class="icon-remove"></i></li>
+						  {% endfor %}
+						  
 						</ul>
 					</div>
 				</div>	

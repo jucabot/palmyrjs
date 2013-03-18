@@ -1,19 +1,19 @@
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
 {% load url from future %}
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>The PALMyR Project</title>
+    <title>Data Science for Everyone</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <!-- Le styles -->
+    <!-- Les styles -->
     <link href="{{ STATIC_PREFIX }}bootstrap/css/bootstrap.css" rel="stylesheet">
-     <link href="{{ STATIC_PREFIX }}css/global.css" rel="stylesheet">
-     {% block style %}
+    <link href="{{ STATIC_PREFIX }}css/global.css" rel="stylesheet">
+    {% block style %}
     {% endblock %}
     <link href="{{ STATIC_PREFIX }}bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
@@ -31,8 +31,8 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          
-          
+          {% block global_menu %}
+          {% endblock %}
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -50,12 +50,13 @@
         <p class="muted credit">2013</p>
     </footer >
 	
+	{% block global_script %}
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="{{ STATIC_PREFIX }}bootstrap/js/jquery.js"></script>
     <script src="{{ STATIC_PREFIX }}bootstrap/js/bootstrap.js"></script>
-    
+    {% endblock %}
 
   </body>
 </html>

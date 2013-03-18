@@ -3,20 +3,7 @@
 
 {% load breadcrumbs %}
 
-{% block style %}
-<style type="text/css">
-      #folders .span2 {
-		text-align: center;
-      }
- 	#folders .p {
-		font-size: 130%;
-      }
-    #submit_file {
-    	margin: 20px;
-    }
-    
-    </style>
-{% endblock %}
+
 {% block content %}
 	
 	<h1>My analysis</h1>
@@ -45,19 +32,24 @@
 	<div class="row-fluid" id="folders">
 	  	<div class="span12">
 		 	{% for dir in directories %}
-	  		<div class="span2" ><a href="?path={{ path }}/{{ dir }}"><img src="{{ STATIC_PREFIX }}/img/folder.png" /></a>
-	  		<p>{{ dir }} <i class="icon-remove" title="remove"></i></p>
-	  		</div>
+		  		<div class="span2" >
+		  		<p class="text-center">
+		  		
+		  		<a href="?path={{ path }}/{{ dir }}"><img src="{{ STATIC_PREFIX }}/img/folder.png" /></a>
+		  		<br/><span>{{ dir }} <i class="icon-remove" title="remove"></i></span>
+		  		</p>
+		  		</div>
 			{% endfor %}
 			
 			{% for file in files %}
-		  		<div class="span2"><a href="{% url 'open-analysis' %}?dpath={{ path }}/{{ file }}"><img src="{{ STATIC_PREFIX }}/img/analytics.png" /></a>
-	  			<p>{{ file }} <i class="icon-remove"  title="remove"></i></p></div>
+		  		<div class="span2">
+		  		<p class="text-center">
+		  		<a href="{% url 'open-analysis' %}?dpath={{ path }}/{{ file }}"><img src="{{ STATIC_PREFIX }}/img/analytics.png" /></a>
+	  			<br/><span>{{ file }} <i class="icon-remove"  title="remove"></i></span>
+	  			</p></div>
 			{% endfor %}
 			
 		
 		</div>
 	
-	
-
 {% endblock %}

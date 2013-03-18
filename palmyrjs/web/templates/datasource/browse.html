@@ -3,20 +3,6 @@
 
 {% load breadcrumbs %}
 
-{% block style %}
-<style type="text/css">
-      #folders .span2 {
-		text-align: center;
-      }
- 	#folders .p {
-		font-size: 130%;
-      }
-    #submit_file {
-    	margin: 20px;
-    }
-    
-    </style>
-{% endblock %}
 {% block content %}
 	
 	<h1>My data sources</h1>
@@ -45,26 +31,36 @@
 	<div class="row-fluid" id="folders">
 	  	<div class="span12">
 	  		{% if path = "/" %}
-		 	<div class="span2" ><a href="#marketplace"><img src="{{ STATIC_PREFIX }}/img/marketplace.png" /></a>
-	  		<p>Marketplace</p>
+		 	<div class="span2" >
+		 		<p class="text-center">
+		 			<a href="#marketplace"><img src="{{ STATIC_PREFIX }}/img/marketplace.png" /></a>
+	  				<br/>Marketplace
+	  			</p>
 	  		</div>
 	  		
-	  		<div class="span2" ><a href="#examples"><img src="{{ STATIC_PREFIX }}/img/sharedfolder.png" /></a>
-	  		<p>Shared folder</p>
+	  		<div class="span2" >
+	  		<p class="text-center"><a href="#examples"><img src="{{ STATIC_PREFIX }}/img/sharedfolder.png" /></a>
+	  		<br/>Shared folder</p>
 	  		</div>
 	  		
 			{% endif %}
 		 	
 		 	{% for dir in directories %}
 	  		<div class="span2" >
+	  			<p class="text-center">
 	  			<a href="?path={{ path }}/{{ dir }}"><img src="{{ STATIC_PREFIX }}/img/folder.png" /></a>
-	  			<p>{{ dir }} <i class="icon-remove" title="remove"></i></p>
+	  			<br/>
+	  			<span>{{ dir }} <i class="icon-remove" title="remove"></i></span>
+	  			</p>
 	  		</div>
 			{% endfor %}
 			
 			{% for file in files %}
-		  		<div class="span2"><a href="{% url 'create-analysis' %}?dpath={{ path }}/{{ file }}"><img src="{{ STATIC_PREFIX }}/img/file.png" /></a>
-	  			<p>{{ file }} <i class="icon-remove" title="remove"></i></p></div>
+		  		<div class="span2"><p class="text-center"><a href="{% url 'create-analysis' %}?dpath={{ path }}/{{ file }}"><img src="{{ STATIC_PREFIX }}/img/file.png" /></a>
+	  			<br/>
+	  			<span>{{ file }} <i class="icon-remove" title="remove"></i></span>
+	  			</p>
+	  			</div>
 			{% endfor %}
 			
 		
