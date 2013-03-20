@@ -66,17 +66,28 @@
 										<button class="btn btn-mini" type="button" onclick="ftcmd.set_class('{{fname}}',true,function() {document.location = target_url;});">Set as class</button>
 									{% endif %}
 								</td>
-								<td>{% if feature.get_undefined_values|length > 0 %}
-										{{ feature.get_undefined_values|length|default:'' }}/{{ ftable.get_row_count|default:'' }}
+								<td>{% if feature.num_undefined_value > 0 %}
+										{{ feature.num_undefined_value|default:'' }}/{{ ftable.get_row_count|default:'' }}
 									{% endif %}
 								</td>
-								<td>{{ feature.common_value|default_if_none:'' }}</td>
-								<td>{{ feature.min_value|floatformat|default_if_none:'' }}</td>
-								<td>{{ feature.mean_value|floatformat|default_if_none:'' }}</td>
-								<td>{{ feature.max_value|floatformat|default_if_none:'' }}</td>
-								<td>{{ feature.median_value|floatformat|default_if_none:'' }}</td>
-								<td>{{ feature.first_quarter_percentile|floatformat|default_if_none:'' }}</td>
-								<td>{{ feature.third_quarter_percentile|floatformat|default_if_none:'' }}</td>
+								{% if not feature.has_class %}
+									<td>{{ feature.common_value|default_if_none:'' }}</td>
+									<td>{{ feature.min_value|floatformat|default_if_none:'' }}</td>
+									<td>{{ feature.mean_value|floatformat|default_if_none:'' }}</td>
+									<td>{{ feature.max_value|floatformat|default_if_none:'' }}</td>
+									<td>{{ feature.median_value|floatformat|default_if_none:'' }}</td>
+									<td>{{ feature.first_quarter_percentile|floatformat|default_if_none:'' }}</td>
+									<td>{{ feature.third_quarter_percentile|floatformat|default_if_none:'' }}</td>
+								{% else %}
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+								{% endif %}
+
 								<td>
 									{% ifnotequal fname ftable.target %}
 										{% if feature.target_allowed %}
