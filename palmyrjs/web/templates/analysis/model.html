@@ -13,7 +13,7 @@
 	}
 	#model-score {
 		margin:20px;
-		margin-top: 40%;
+		margin-top: 10%;
 		font-size: 800%;
 	}
 	
@@ -59,18 +59,14 @@
 			</div>	
 			<div class="row-fluid">
 				
-				<div class="span3">
-					<div id="score" class="hidden">
-						<h3>Model accuracy</h3>
-						<div id="model-score"><span id="model-score-major" class="score-major"></span><span id="model-score-minor" class="score-minor"></span></div>
-					</div>
-				</div>	
-				<div class="span6">
+	
+				<div class="span4">
 					 {% if ftable.target %}
 						<h2>Prediction of <strong id="target-name" class="text-success">{{ ftable.target }}</strong> </h2>
 					 {% else %}
 					 	<h2>Find clusters</h2>
 					 {% endif %}
+					 <div id="filter-info"></div>
 						<h3>Selected features</h3>
 						<div id="features">
 						{% for fname,feature in ftable.get_features %}
@@ -83,19 +79,30 @@
 							{% endifnotequal %}
 						{% endfor %}
 						</div>
+						
 					</div>
-				<div class="span3">
+				<div class="span6">
+					<div id="score" class="hidden">
+						<h3>Model accuracy</h3>
+						<div id="model-score"><span id="model-score-major" class="score-major"></span><span id="model-score-minor" class="score-minor"></span></div>
+					</div>
+					<div id="model-output"></div>
+				</div>
+				<div class="span2">
 					<div class="well sidebar-nav" id="saved-model-list">
 						<ul  class="nav nav-list">
 							<li class="nav-header">Actions</li>
-							<li><a href="#" onclick="ftcmd.build_model(update_score); return false;" ><i class="icon-play-circle"></i>Find model</a></li>
-							<li><a href="#" onclick="ftcmd.select_best_features(select_best_features); return false;" ><i class="icon-random"></i>Find best features</a></li>
-							<li><a id="btn-apply-model"  href="#apply-model-modal" role="button" data-toggle="modal"><i class="icon-filter"></i>Create bucket...</a></li>
-							
+							<li><a href="#" onclick="ftcmd.build_model(current_filter,update_score); return false;" ><i class="icon-play-circle"></i>Find model</a></li>
+							<li><a href="#" onclick="ftcmd.select_best_features(current_filter,select_best_features); return false;" ><i class="icon-random"></i>Find features</a></li>
+							<li><a id="btn-add-filter"  href="#add-filter-modal" role="button" data-toggle="modal"><i class="icon-filter"></i>Add filter...</a></li>
 							<li><a id="btn-save-model" href="#" onclick="ftcmd.save_model('{{ ftable.target }}',add_saved_model); return false;" ><i class="icon-star-empty"></i>Save model</a></li>
-							<li><a id="btn-apply-model"  href="#apply-model-modal" role="button" data-toggle="modal"><i class="icon-retweet"></i>Apply model...</a></li>
+							<li><a id="btn-apply-model"  href="#apply-model-modal" role="button" data-toggle="modal"><i class="icon-retweet"></i>Predict...</a></li>
 							
-						
+						 <li class="nav-header" id="filter-list">Filters</li>
+						  {% for name in ftable.filters.keys %}
+						  	<li class="filter-item"><span><a href="#" onclick="select_filter('{{ name }}'); return false;">{{ name }}</a> <i class="icon-remove"></i></li>
+						  {% endfor %}
+						  
 						  <li class="nav-header">Saved models</li>
 						  {% for model_name, model in ftable.models.items %}
 						  	<li><span><a href="#" onclick="ftcmd.get_model_info('{{ model_name }}',set_model_info);">{{ model_name }}</a><i class="icon-remove"></i></span></li>
@@ -107,18 +114,12 @@
 				
 			
 			
-			<div class="row-fluid">
-				
-				<div class="span3"></div>
-				<div class="span6" id="model-output">
-				</div>
-				<div class="span3"></div>	
-			</div>
+			
 				
 {% include "analysis/inc_save_popup.html" %}
 {% include "analysis/inc_add_feature_popup.html" %}			
 {% include "analysis/inc_apply_model_popup.html" %}
-			   
+{% include "analysis/inc_add_filter_popup.html" %}
 {% endblock %}
 
 {% block script %}
@@ -132,6 +133,7 @@ var ftcmd = new FeatureTableCommand(api_url,ftable_name);
 
 var current_model_name = null;
 
+var current_filter = undefined;
 
 function update_score(model_info) {
 
@@ -140,7 +142,6 @@ function update_score(model_info) {
 	
 	score_major = score[0];
 	score_minor = score[1];
-	
 	$('#model-score-major').html(score_major);
 	$('#model-score-minor').html('.' + score_minor + '%');
 	
@@ -180,6 +181,7 @@ function update_score(model_info) {
 		$('#model-output').height(100 * model_info.metrics.length);
 	}
 	else {
+		$('#score').addClass('hidden');
 		$('#model-output').html('');
 	}
 	
@@ -220,12 +222,12 @@ function set_model_info(model_info) {
 	
 }
 
-
 function add_saved_model(name) {
 	document.location.reload();
 }
 
 function select_best_features(kbest) {
+	$('#score').addClass('hidden');
 	html = '<h3>Best features</h3>';
 	html += '<div id="best-feature-bar">';
 	html += '</div>';
@@ -252,7 +254,11 @@ $('#apply-model-modal').on('show', function () {
 	$('#output-filename').val(ftable_name.replace(name,'predictions.csv'));
 });
 
+{% include "analysis/inc_add_filter_script.js" %}
+
 ftcmd.get_current_model_info(update_score);
+
+
 
 </script>
 

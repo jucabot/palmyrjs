@@ -33,7 +33,7 @@
 			<div class="row-fluid">
 				
 				
-				<div class="span9">
+				<div class="span10">
 					 	
 					 	<div class="row-fluid">
 					 	<form class="form-inline" id="query-form">
@@ -50,14 +50,14 @@
 						
 						
 					</div>
-				<div class="span3">
+				<div class="span2">
 					<div class="well sidebar-nav" id="saved-query-list">
 						<ul  class="nav nav-list">
 						  <li class="nav-header">Actions</li>
 						  	<li><a href="#" onclick=""><i class="icon-edit"></i>Edit...</a></li>
 						  	<li><a href="#" onclick=""><i class="icon-star-empty"></i>Bookmark</a></li>
-						  	<li><a href="#" onclick=""><i class="icon-picture"></i>Export as image</a></li>
-						  	<li><a href="#" onclick=""><i class="icon-download"></i>Export to Excel</a></li>
+						  	<li><a href="#" onclick=""><i class="icon-picture"></i>Export image</a></li>
+						  	<li><a href="#" onclick=""><i class="icon-download"></i>Export data</a></li>
 						  	<li><a href="#" onclick=""><i class="icon-share"></i>Share...</a></li>
 						  	<li><a href="#" onclick=""><i class="icon-tags"></i>Dash...</a></li>
 						  	
@@ -69,7 +69,7 @@
 						  
 						  <li class="nav-header" id="filter-list">Filters</li>
 						  {% for name in ftable.filters.keys %}
-						  	<li><span><a href="#" onclick="select_filter('{{ name }}'); return false;">{{ name }}</a> <i class="icon-remove"></i></li>
+						  	<li class="filter-item"><span><a href="#" onclick="select_filter('{{ name }}'); return false;">{{ name }}</a> <i class="icon-remove"></i></li>
 						  {% endfor %}
 						  
 						</ul>
@@ -80,21 +80,8 @@
 							
 {% include "analysis/inc_save_popup.html" %}
 {% include "analysis/inc_add_feature_popup.html" %}
+{% include "analysis/inc_add_filter_popup.html" %}
 
-<div id="add-filter-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="AddFilterModal" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="add-filter-modal-label">Add filter...</h3>
-  </div>
-  <div class="modal-body">
-	<input id="filter-name" type="text" placeholder="Enter the name of the filter..." value="{{ feature.current_filter.name }}">  
-	<textarea id="filter-code" rows="12" class="span5" placeholder="Enter the feature code... function = lambda table,row_index : ... " ></textarea>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary" onclick="ftcmd.add_filter($('#filter-name').val(),$('#filter-code').val(), add_filter);">Create</button>
-  </div>
-</div>	
 	   
 {% endblock %}
 
@@ -170,29 +157,7 @@ function display_result(type,data,query) {
 	$('#query-result-toolbar').removeClass('hidden');
 }
 
-function add_filter(name,code) {
-	$('#add-filter-modal').modal('hide');
-	$('#filter-list').append('<li>' + name + '</li>');
-	$('#filter-info').html('<div class="alert alert-info"><strong>Filter : ' + name + '</strong><br/><code>' + code + '</code><button class="pull-right btn btn-mini btn-info" onclick="clear_filter();">Clear filter</button></div>');
-	current_filter = code;				
-}
-
-function select_filter(name,code) {
-
-	ftcmd.select_filter(name, function (name,code) {
-			$('#filter-info').html('<div class="alert alert-info"><strong>Filter : ' + name + '</strong><br/><code>' + code + '</code><button class="pull-right btn btn-mini btn-info" onclick="clear_filter();">Clear filter</button></div>');
-			current_filter = code;
-		 });
-}
-
-function clear_filter() {
-
-	ftcmd.clear_filter(function () {
-			$('#filter-info').html('');
-			current_filter = undefined;
-		 });
-}
-
+{% include "analysis/inc_add_filter_script.js" %}
 </script>
 
 

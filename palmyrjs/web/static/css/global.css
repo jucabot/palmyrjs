@@ -9,6 +9,10 @@ html,body {
 footer {
 	height: 40px;
 	background-color: #f5f5f5;
+	margin-top: -40px;
+	position: relative;
+  clear:both;
+  
 }
 
 footer p {

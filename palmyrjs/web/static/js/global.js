@@ -101,11 +101,11 @@ function FeatureTableCommand(api_url,ftable_name)
 	
 	}
 	
-	this.build_model = function(done_func) {
+	this.build_model = function(filter, done_func) {
 	
 		var cmd = 'build-model';
 		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd },
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'filter':filter },
 			function(response) {
 					done_func(response.model_info);
 			});
@@ -171,11 +171,11 @@ function FeatureTableCommand(api_url,ftable_name)
 		}
 	}
 	
-	this.select_best_features = function (done) {
+	this.select_best_features = function (filter, done) {
 		var cmd = 'select-best-features';
 		
 		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd },
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'filter': filter },
 			function(response) {
 					done(response.kbest);
 			});
