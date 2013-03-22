@@ -40,10 +40,10 @@
 					 		<div class="input-append">
 							  <input id="query" type="text" class="input-xxlarge" placeholder="Enter your query here" value="{{ query }}" data-provide="typeahead">
 							  <button type="submit" class="btn btn-primary btn-long">Query</button>
-							  <button class="btn btn-long" href="#add-filter" role="button" data-toggle="modal">Filter...</button>
+							  <button class="btn btn-long" href="#add-filter-modal" role="button" data-toggle="modal">Filter...</button>
 							</div>
-						  	
 						</form>
+						<div id="filter-info"></div>
 	</div>
 						
 						<div id="result"></div>
@@ -66,11 +66,10 @@
 						  {% for query in ftable.queries %}
 						  	<li><span><a href="#" onclick=""></a> <i class="icon-remove"></i></li>
 						  {% endfor %}
-						  <li><span><a href="#" onclick="">age by survived</a> <i class="icon-remove"></i></span></li>
 						  
-						  <li class="nav-header">Filters</li>
-						  {% for query in ftable.filters %}
-						  	<li><span><a href="#" onclick=""></a> <i class="icon-remove"></i></li>
+						  <li class="nav-header" id="filter-list">Filters</li>
+						  {% for name in ftable.filters.keys %}
+						  	<li><span><a href="#" onclick="select_filter('{{ name }}'); return false;">{{ name }}</a> <i class="icon-remove"></i></li>
 						  {% endfor %}
 						  
 						</ul>
@@ -78,13 +77,25 @@
 				</div>	
 			</div>
 				
-			
-			
-			
-				
+							
 {% include "analysis/inc_save_popup.html" %}
-{% include "analysis/inc_add_feature_popup.html" %}			
-			   
+{% include "analysis/inc_add_feature_popup.html" %}
+
+<div id="add-filter-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="AddFilterModal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="add-filter-modal-label">Add filter...</h3>
+  </div>
+  <div class="modal-body">
+	<input id="filter-name" type="text" placeholder="Enter the name of the filter..." value="{{ feature.current_filter.name }}">  
+	<textarea id="filter-code" rows="12" class="span5" placeholder="Enter the feature code... function = lambda table,row_index : ... " ></textarea>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" onclick="ftcmd.add_filter($('#filter-name').val(),$('#filter-code').val(), add_filter);">Create</button>
+  </div>
+</div>	
+	   
 {% endblock %}
 
 {% block script %}
@@ -95,6 +106,8 @@ var api_url = '{% url 'api-analysis' %}';
 var target_url = '{% url 'summary-analysis' %}?dpath={{ dpath }}';
 
 var ftcmd = new FeatureTableCommand(api_url,ftable_name);
+
+var current_filter;
 
 $(function() {
 	var source = [];
@@ -117,7 +130,7 @@ $('#query-form').submit(function() {
 	
 	var query = $('#query').val();
 	
-	ftcmd.nl_query(query, display_result);
+	ftcmd.nl_query(query, current_filter, display_result);
 	return false;
 });
 
@@ -151,12 +164,34 @@ function display_result(type,data,query) {
 		return;
 	}
 	//$('#result').height(0);
-	$('#result').height('auto');
+	$('#result').append('<br/><br/>');
 	//$('#result').height($('#result').height()+100);
 	
 	$('#query-result-toolbar').removeClass('hidden');
 }
 
+function add_filter(name,code) {
+	$('#add-filter-modal').modal('hide');
+	$('#filter-list').append('<li>' + name + '</li>');
+	$('#filter-info').html('<div class="alert alert-info"><strong>Filter : ' + name + '</strong><br/><code>' + code + '</code><button class="pull-right btn btn-mini btn-info" onclick="clear_filter();">Clear filter</button></div>');
+	current_filter = code;				
+}
+
+function select_filter(name,code) {
+
+	ftcmd.select_filter(name, function (name,code) {
+			$('#filter-info').html('<div class="alert alert-info"><strong>Filter : ' + name + '</strong><br/><code>' + code + '</code><button class="pull-right btn btn-mini btn-info" onclick="clear_filter();">Clear filter</button></div>');
+			current_filter = code;
+		 });
+}
+
+function clear_filter() {
+
+	ftcmd.clear_filter(function () {
+			$('#filter-info').html('');
+			current_filter = undefined;
+		 });
+}
 
 </script>
 

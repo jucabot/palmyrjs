@@ -216,19 +216,50 @@ function FeatureTableCommand(api_url,ftable_name)
 		
 	}
 	
-	this.nl_query = function (query,done) {
+	this.nl_query = function (query,filter,done) {
 		var cmd = 'nl-query';
 		
 		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'query': query },
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'query': query, 'filter':filter },
 			function(response) {
 					done(response.type,response.data,response.query);
 			});
 		
 	}
 	
-	
+	this.add_filter = function (name,code,done) {
+		var cmd = 'add-filter';
+		
+		this._call_api(
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'name': name, 'code':code },
+			function(response) {
+					done(name,code);
+			});
+		
+	}
 
+	this.select_filter = function (name,done) {
+		var cmd = 'select-filter';
+		
+		this._call_api(
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'name': name },
+			function(response) {
+					done(name,response.data);
+			});
+		
+	}
+	
+	this.clear_filter = function (done) {
+		var cmd = 'clear-filter';
+		
+		this._call_api(
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd },
+			function(response) {
+					done();
+			});
+		
+	}
+	
 	this.init();
 
 }
@@ -529,30 +560,31 @@ function draw_table(name,data,render_to,title) {
   	if (data.has_prev) {
   		query = '(num_page:' + (data.page_num - 1) + ')';
 
-  		html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\', display_result);">&laquo;</a></li>'
+  		html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter, display_result);">&laquo;</a></li>'
   	}
     $.each(data.list_pages,function (i) {
     	var num_page = 0;
     	num_page = data.list_pages[i]+1;
     	query = '(num_page:' + i + ')';
     	if (i == data.page_num) {
-	    	html += '<li class="active"><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\', display_result);">' + num_page + '</a></li>'
+	    	html += '<li class="active"><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter, display_result);">' + num_page + '</a></li>'
 	    }
 	    else {
-	    	html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\', display_result);">' + num_page + '</a></li>'
+	    	html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter, display_result);">' + num_page + '</a></li>'
 	    }
     });
   	if (data.has_next) {
   		query = '(num_page:' + (data.page_num + 1) + ')';
-  		html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\', display_result);">&raquo;</a></li>'
+  		html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter, display_result);">&raquo;</a></li>'
   	}
 
     html += '</ul>';
 	html += '<div class="pull-right">';
 	html += 'page ' + (data.page_num + 1) +'/' + data.page_total;
-	html += '&nbsp; total rows ' + data.num_total_rows;
+	html += '&nbsp; total rows ' + data.num_rows + '/' + data.num_total_rows;
 	html += '</div>';
-	html += '</div>';
+	html += '</div><br/>';
+	
 	$('#'+render_to).html(html);
 	
 }
