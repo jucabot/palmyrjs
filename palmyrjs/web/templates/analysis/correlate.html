@@ -14,7 +14,7 @@
 {% endblock %}
 {% block content %}
 	<a name="top"></a>
-	<h1>Analysis of {{ name }}</h1>
+	<h1>Analysis of {{ name }} <small>Analyze and visualize data</small></h1>
 	
 		<div id="message"></div>
 	
@@ -95,6 +95,7 @@ var target_url = '{% url 'summary-analysis' %}?dpath={{ dpath }}';
 var ftcmd = new FeatureTableCommand(api_url,ftable_name);
 
 var current_filter;
+var current_filter_name;
 
 $(function() {
 	var source = [];

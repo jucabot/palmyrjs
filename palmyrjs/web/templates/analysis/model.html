@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load url from future %}
 {% load typeformat %}
-
+{% load raw %}
 
 {% block style %}
 <style>
@@ -41,7 +41,7 @@
 {% endblock %}
 {% block content %}
 	
-	<h1>Analysis of {{ name }}</h1>
+	<h1>Analysis of {{ name }} <small>Build predictive models and predict data</small></h1>
 	
 		<div id="message"></div>
 	
@@ -92,10 +92,11 @@
 					<div class="well sidebar-nav" id="saved-model-list">
 						<ul  class="nav nav-list">
 							<li class="nav-header">Actions</li>
-							<li><a href="#" onclick="ftcmd.build_model(current_filter,update_score); return false;" ><i class="icon-play-circle"></i>Find model</a></li>
+							<li><a href="#" onclick="ftcmd.build_model(current_filter_name,current_filter,update_score); return false;" ><i class="icon-play-circle"></i>Find model</a></li>
 							<li><a href="#" onclick="ftcmd.select_best_features(current_filter,select_best_features); return false;" ><i class="icon-random"></i>Find features</a></li>
 							<li><a id="btn-add-filter"  href="#add-filter-modal" role="button" data-toggle="modal"><i class="icon-filter"></i>Add filter...</a></li>
 							<li><a id="btn-save-model" href="#" onclick="ftcmd.save_model('{{ ftable.target }}',add_saved_model); return false;" ><i class="icon-star-empty"></i>Save model</a></li>
+							<li><a id="btn-score-model"  href="#score-model-modal" role="button" data-toggle="modal"><i class="icon-bullhorn"></i>Score models</a></li>
 							<li><a id="btn-apply-model"  href="#apply-model-modal" role="button" data-toggle="modal"><i class="icon-retweet"></i>Predict...</a></li>
 							
 						 <li class="nav-header" id="filter-list">Filters</li>
@@ -112,14 +113,48 @@
 				</div>	
 			</div>
 				
-			
-			
-			
 				
 {% include "analysis/inc_save_popup.html" %}
 {% include "analysis/inc_add_feature_popup.html" %}			
 {% include "analysis/inc_apply_model_popup.html" %}
 {% include "analysis/inc_add_filter_popup.html" %}
+
+
+{% raw %}
+	<script id="template-confusion-matrix" type="text/dot.js">
+		<h3>Confusion matrix</h3>
+		<table class="table table-condensed">
+		<thead><tr>
+		{{~it.model_info.target_class:target_class:i}}
+			<th>{{=it.model_info.target}}={{=target_class}}</th>
+		{{~}}
+		</tr></thead>
+		{{~it.model_info.metrics:metric_row:i}}
+			<tr>
+			{{~metric_row:metric:j}}
+				{{?i==j}}
+					<td class="success">{{=metric}}</td>
+				{{??}}
+					<td class="warning">{{=metric}}</td>
+				{{?}}
+			{{~}}
+			</tr>
+		{{~}}
+		
+		</table>
+	</script>
+	
+	<script id="template-best-features" type="text/dot.js">
+	<h3>Best features</h3>
+	<div id="best-feature-bar"></div>
+	</script>
+{% endraw %}
+
+
+
+</div>
+
+
 {% endblock %}
 
 {% block script %}
@@ -131,9 +166,14 @@ var target_url = '{% url 'summary-analysis' %}?dpath={{ dpath }}';
 
 var ftcmd = new FeatureTableCommand(api_url,ftable_name);
 
+var current_target = null;
 var current_model_name = null;
 
-var current_filter = undefined;
+var current_filter;
+var current_filter_name;
+
+var confusion_matrix_template = doT.template($('#template-confusion-matrix').text());
+		
 
 function update_score(model_info) {
 
@@ -150,34 +190,11 @@ function update_score(model_info) {
 	$('#btn-apply-model').removeClass('disabled');
 	
 	current_model_name = model_info.name;
+	current_target = model_info.target;
 	
 	if(model_info.model_type == 'CLAS' && model_info.metrics != null) {
-		html = '<h3>Confusion matrix</h3>';
-		html += '<table class="table table-condensed">';
-		html += '<thead><tr>';
-		$.each(model_info.target_class,function (i) {
-			html += '<th>' +  model_info.target + '=' + model_info.target_class[i] + '</th>';
-		});
-		html += '</tr></thead>';
-		
-		
-		$.each(model_info.metrics,function (i) {
-			html += '<tr>';
-			$.each(model_info.metrics[i],function (j) {
-				if (i==j) {
-					html += '<td class="success">' + model_info.metrics[i][j] + '</td>';
-				}
-				else {
-					html += '<td class="warning">' + model_info.metrics[i][j] + '</td>';
-				}
-			});
-			html += '</tr>';
-		});
-		
-		
-		html += '</table>';
-		
-		$('#model-output').html(html);
+	
+		$('#model-output').html(confusion_matrix_template({ 'model_info':model_info}));
 		$('#model-output').height(100 * model_info.metrics.length);
 	}
 	else {
@@ -185,6 +202,17 @@ function update_score(model_info) {
 		$('#model-output').html('');
 	}
 	
+	if (model_info.filter != null) {
+		$('#filter-info').html('<div class="alert alert-info"><strong>Filter : ' + model_info.filter_name + '</strong><button class="pull-right btn btn-mini btn-info" onclick="clear_filter();">Clear filter</button><br/><br/><pre>' + model_info.filter + '</pre></div>');
+		current_filter = model_info.filter;
+		current_filter_name = model_info.filter_name;
+	}
+	else {
+		$('#filter-info').html('');
+		current_filter = undefined;
+		current_filter_name = undefined;
+	}
+		
 	
 	
 	
@@ -217,6 +245,8 @@ function set_model_info(model_info) {
 		}
 	
 	});
+	
+	
 	$('#target-name').html(model_info.target);
 	
 	
@@ -228,10 +258,8 @@ function add_saved_model(name) {
 
 function select_best_features(kbest) {
 	$('#score').addClass('hidden');
-	html = '<h3>Best features</h3>';
-	html += '<div id="best-feature-bar">';
-	html += '</div>';
-	$('#model-output').html(html);
+		
+	$('#model-output').html($('#template-best-features').text());
 	categories = [];
 	data=[];
 	$.each(kbest, function (i) {
@@ -257,6 +285,7 @@ $('#apply-model-modal').on('show', function () {
 {% include "analysis/inc_add_filter_script.js" %}
 
 ftcmd.get_current_model_info(update_score);
+
 
 
 

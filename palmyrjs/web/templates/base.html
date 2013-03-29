@@ -13,10 +13,10 @@
      
      <div class="nav-collapse collapse">
        <ul class="nav pull-left">
-         <li {% ifequal active_menu "home" %} class="active" {% endifequal %}><a href="{% url 'home' %}">Home</a></li>
-         <li {% ifequal active_menu "datasource" %} class="active" {% endifequal %}><a href="{% url 'browse-datasource' %}">Data</a></li>
+        <li {% ifequal active_menu "datahub" %} class="active" {% endifequal %}><a href="{% url 'browse-datahub' %}">Data hub</a></li>
+        <li {% ifequal active_menu "datasource" %} class="active" {% endifequal %}><a href="{% url 'browse-datasource' %}">Dataset</a></li>
 		<li {% ifequal active_menu "analysis" %} class="active" {% endifequal %}><a href="{% url 'browse-analysis' %}">Analysis</a></li>
-		<li {% ifequal active_menu "dashboard" %} class="active" {% endifequal %}><a href="#dashboard">Dashboard</a></li>
+		
 
        </ul>
        <ul class="nav pull-right">
@@ -31,17 +31,12 @@
 
 
 {% block global_script %}
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{{ STATIC_PREFIX }}bootstrap/js/jquery.js"></script>
-    <script src="{{ STATIC_PREFIX }}bootstrap/js/bootstrap.js"></script>
     
     <script src="{{ STATIC_PREFIX }}js/global.js"></script>
     
     <!-- <script src="{{ STATIC_PREFIX }}charts/highcharts.js"></script>  -->
-    <script src="{{ STATIC_PREFIX }}charts3beta/highcharts.js"></script>
-    <script src="{{ STATIC_PREFIX }}charts3beta/highcharts-more.js"></script>
+    <script src="{{ STATIC_PREFIX }}highcharts/highcharts.js"></script>
+    <script src="{{ STATIC_PREFIX }}highcharts/highcharts-more.js"></script>
     
     <script src="{{ STATIC_PREFIX }}d3/d3.js"></script>
 	<script src="{{ STATIC_PREFIX }}d3/d3.layout.cloud.js"></script>

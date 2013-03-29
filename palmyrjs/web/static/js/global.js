@@ -101,11 +101,11 @@ function FeatureTableCommand(api_url,ftable_name)
 	
 	}
 	
-	this.build_model = function(filter, done_func) {
+	this.build_model = function(filter_name,filter, done_func) {
 	
 		var cmd = 'build-model';
 		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'filter':filter },
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'filter':filter,'filter_name':filter_name },
 			function(response) {
 					done_func(response.model_info);
 			});
