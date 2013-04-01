@@ -18,6 +18,75 @@ function stack_list(list) {
 	return stacked_list;
 }
 
+function Template(template_id) {
+
+	this.template_id = template_id;
+	this.template_function;
+	
+	this.init = function() {
+		this.template_function = doT.template($(this.template_id).text());
+	};
+	
+	this.apply = function (id,data) {
+		$(id).html(this.template_function(data));
+	}
+	
+	
+	this.init();
+
+}
+
+
+function GeneralCommand(api_url,ftable_name)
+{
+	this.url = api_url;
+	
+	this.init = function() {
+
+	}
+	
+	this._call_api = function (data, done) {
+		$("body").css("cursor", "progress");
+		return $.getJSON(
+			this.url,
+			data,
+			function(data) {
+				if (data.status == 'success' && done != null) {
+					done(data);
+					$('#message').html('');
+				}
+				
+				if (typeof data.message != "undefined" && data.message != '') {
+					$('#message').html('<div class="alert alert-' + data.status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + capFirstLetter(data.status) + '!</strong><br/>' + data.message + '</div>');
+				}
+				$("body").css("cursor", "auto");
+			});
+
+	}
+
+	this.get_content = function (base,key,done) {
+		var cmd = 'get-content';
+		this._call_api(
+			{ 'cmd':cmd, 'base': base, 'key' : key },
+			function(response) {
+					done(response.data);
+			});
+	}
+	
+	this.create_analysis = function (data_id,base,done) {
+		var cmd = 'create-analysis';
+		this._call_api(
+			{ 'cmd':cmd, 'base': base, 'data_id': data_id},
+			function(response) {
+					done(response.name);
+			});
+		
+	}
+	
+
+	this.init();
+}
+
 function FeatureTableCommand(api_url,ftable_name)
 {
 	this.url = api_url;
@@ -35,6 +104,7 @@ function FeatureTableCommand(api_url,ftable_name)
 			function(data) {
 				if (data.status == 'success' && done != null) {
 					done(data);
+					$('#message').html('');
 				}
 				if (typeof data.message != "undefined" && data.message != '') {
 					$('#message').html('<div class="alert alert-' + data.status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + capFirstLetter(data.status) + '!</strong><br/>' + data.message + '</div>');
