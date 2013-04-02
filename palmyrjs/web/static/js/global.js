@@ -114,6 +114,15 @@ function FeatureTableCommand(api_url,ftable_name)
 
 	}
 
+	this.get_featureset = function (fname,done) {
+		var cmd = 'get-featureset';
+		this._call_api(
+			{ 'ftable' : this.ftable_name, 'feature_name': fname, 'cmd' : cmd },
+			function(response) {
+					done(response.data);
+			});
+	}
+	
 	this.set_target = function (fname,done) {
 		var cmd = 'set-target';
 		this._call_api(
@@ -329,6 +338,18 @@ function FeatureTableCommand(api_url,ftable_name)
 			});
 		
 	}
+	
+	this.remove_model = function (model_name, done) {
+		var cmd = 'remove-model';
+		
+		this._call_api(
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'model': model_name },
+			function(response) {
+					done();
+			});
+		
+	}
+	
 	
 	this.init();
 

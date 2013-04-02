@@ -106,7 +106,7 @@
 						  
 						  <li class="nav-header">Saved models</li>
 						  {% for model_name, model in ftable.models.items %}
-						  	<li><span><a href="#" onclick="ftcmd.get_model_info('{{ model_name }}',set_model_info);">{{ model_name }}</a><i class="icon-remove"></i></span></li>
+						  	<li><span><a href="#" onclick="ftcmd.get_model_info('{{ model_name }}',set_model_info);">{{ model_name }}</a><a href="#"><i class="icon-remove" onclick="remove_model('{{ model_name }}');"></i></a></span></li>
 						  {% endfor %}
 						</ul>
 					</div>
@@ -286,7 +286,11 @@ $('#apply-model-modal').on('show', function () {
 
 ftcmd.get_current_model_info(update_score);
 
-
+function remove_model(model_name) {
+	ftcmd.remove_model(model_name, function() {
+		window.location.reload();
+	});
+}
 
 
 </script>
