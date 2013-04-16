@@ -81,6 +81,7 @@
 {% include "analysis/inc_save_popup.html" %}
 {% include "analysis/inc_add_feature_popup.html" %}
 {% include "analysis/inc_add_filter_popup.html" %}
+{% include "analysis/inc_search_correlation_popup.html" %}
 
 	   
 {% endblock %}
@@ -146,6 +147,9 @@ function display_result(type,data,query) {
 	}
 	else if (type == 'wordcloud') {
 		draw_wordcloud('',data,'result',query);
+	}
+	else if (type == 'timeline') {
+		draw_timeline('',data,'result',query);
 	}
 	else {
 		$('#result').html('Oops! There is no data vizualisation for this query');

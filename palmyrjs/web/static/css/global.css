@@ -20,6 +20,16 @@ footer p {
 	margin-top: 10px;
 }
 
+.brand-logo {
+	padding-left:20px;
+	padding-right:20px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	float: left;
+	display: block;
+	
+}
+
 .df_chart : {
 	max-width: 400px;
 	height-max: 400px;

@@ -351,6 +351,7 @@ function FeatureTableCommand(api_url,ftable_name)
 	}
 	
 	
+	
 	this.init();
 
 }
@@ -957,3 +958,78 @@ function draw_box_plot(name,data,render_to,title)
 	var chart = new Highcharts.Chart(options);
 }
 
+function draw_timeline(name,data,render_to,title) {
+	var chart;
+	
+	var options;
+	
+	
+	options = {
+		chart: {
+			renderTo: render_to,
+			type: 'spline',
+            zoomType: 'x'
+		},
+		credits: {
+			enabled: false
+		},
+		title: {
+			text: title,
+			x: -20 //center
+		},
+		xAxis: {
+			title: {
+                    enabled: true,
+                    text: data.label_x
+                },
+	        type: 'datetime',
+	        dateTimeLabelFormats: {
+	        	day: '%d/%m/%Y',
+                month: '%b %Y',
+                year: '%Y'
+            },
+	        
+		},
+		yAxis: {
+				
+                title: {
+                    text: data.label_y,
+                },
+                minorTickInterval: 1.0,
+                startOnTick: true,
+		        endOnTick: true,
+		        showLastLabel: true
+        },
+		tooltip: {
+			formatter: function() {
+                return '<b>'+ this.series.name +'</b><br/>'+
+                Highcharts.dateFormat('%Y-%m-%d', this.x) +': '+ this.y;
+			}
+        },
+        
+       
+        series: [],
+	
+	};
+	
+	for (var i=0;i<data.series.length;i++)
+	{
+		serie = data.series[i];
+		serie.data = parse_dateserie(serie.data);
+		//data.series[i] = serie;
+	}
+	
+	options.series = data.series; 
+	
+	chart = new Highcharts.Chart(options);
+
+}
+
+function parse_dateserie(data) { 
+	var date_data = [];
+	for (var i=0;i<data.length;i++)
+	{
+		date_data.push([Date.parse(data[i][0]),data[i][1]]);
+	}
+	return date_data.sort(function (a,b) { return a[0] - b[0]; });
+}
