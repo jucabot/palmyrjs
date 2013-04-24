@@ -134,52 +134,8 @@ function display_result(type,data,query) {
 	
 	$('#result').prepend('<div id="' + result_hook + '"/>');
 	
-	if (type == 'table') {
-		$('#' + result_hook).addClass('span12');
+	draw_result(type,data,query,result_hook);
 	
-		draw_table('',data,result_hook,'All features');
-	}
-	else if (type == 'box-plot') {
-		//draw_bar('',data,'result',query,'frequency %');
-		$('#' + result_hook).addClass('span6');
-		draw_box_plot('',data,result_hook);
-	}
-	else if (type == 'stacked-bar') {
-		$('#' + result_hook).addClass('span6');
-	
-		draw_percent_stacked_bar('',data,result_hook,query,'frequency %');
-		//draw_mosaic_box('',data,result_hook,query,data.label_x,data.label_y);
-	}
-	else if (type == 'scatter') {
-		$('#' + result_hook).addClass('span6');
-	
-		draw_scatter('',data,result_hook,query,'frequency %');
-	}
-	else if (type == 'pie') {
-		$('#' + result_hook).addClass('span4');
-		draw_pie('',data,result_hook,query);
-	}
-	else if (type == 'bar') {
-		$('#' + result_hook).addClass('span6');
-		draw_bar('',data,result_hook,query,'frequency %');
-	}
-	else if (type == 'wordcloud') {
-		$('#' + result_hook).addClass('span6');
-	
-		draw_wordcloud('',data,result_hook,query);
-	}
-	else if (type == 'timeline') {
-		$('#' + result_hook).addClass('span6');
-	
-		draw_timeline('',data,result_hook,query);
-	}
-	else {
-		$('#' + result_hook).addClass('span12');
-	
-		$('#result').html('Oops! There is no data vizualisation for this query');
-		return;
-	}
-	$('#' + result_hook).append('<br/><br/>');	
 	$('#query-result-toolbar').removeClass('hidden');
 	
 	queries.push({ 'hook' : result_hook, 'query' : query, 'display_type' : type }); 

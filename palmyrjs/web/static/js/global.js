@@ -393,6 +393,62 @@ function FeatureTableCommand(api_url,ftable_name)
 
 }
 
+function draw_result(type,data,query,result_hook) {
+
+		
+	if (type == 'table') {
+		$('#' + result_hook).addClass('span12');
+	
+		draw_table('',data,result_hook,'All features');
+	}
+	else if (type == 'box-plot') {
+		//draw_bar('',data,'result',query,'frequency %');
+		$('#' + result_hook).addClass('span6');
+		draw_box_plot('',data,result_hook);
+	}
+	else if (type == 'stacked-bar') {
+		$('#' + result_hook).addClass('span6');
+	
+		draw_percent_stacked_bar('',data,result_hook,query,'frequency %');
+		//draw_mosaic_box('',data,result_hook,query,data.label_x,data.label_y);
+	}
+	else if (type == 'scatter') {
+		$('#' + result_hook).addClass('span6');
+	
+		draw_scatter('',data,result_hook,query,'frequency %');
+	}
+	else if (type == 'pie') {
+		$('#' + result_hook).addClass('span4');
+		draw_pie('',data,result_hook,query);
+	}
+	else if (type == 'bar') {
+		$('#' + result_hook).addClass('span12');
+		draw_bar('',data,result_hook,query,'frequency %');
+	}
+	else if (type == 'wordcloud') {
+		$('#' + result_hook).addClass('span12');
+	
+		draw_wordcloud('',data,result_hook,query);
+	}
+	else if (type == 'timeline') {
+		$('#' + result_hook).addClass('span6');
+	
+		draw_timeline('',data,result_hook,query);
+	}
+	else if (type == 'serie-list') {
+		$('#' + result_hook).addClass('span12');
+	
+		draw_serie_list('',data,result_hook,query);
+	}
+	else {
+		$('#' + result_hook).addClass('span12');
+	
+		$('#result').html('Oops! There is no data vizualisation for this query');
+		return;
+	}
+	$('#' + result_hook).append('<br/><br/>');	
+
+}
 
 function draw_pie(name,x,render_to,title) {
 	var chart;
@@ -589,7 +645,7 @@ function draw_wordcloud(name,data,render_to,title) {
 	var w = 800;
 	var h = 400;
 	var max_words = 100;
-	var scale_factor = 512; //100% --> font size
+	var scale_factor = 128; //100% --> font size
 	
 	
 	function fade(opacity,text) {
@@ -1081,4 +1137,30 @@ function parse_dateserie(data) {
 		date_data.push([Date.parse(data[i][0]),data[i][1]]);
 	}
 	return date_data.sort(function (a,b) { return a[0] - b[0]; });
+}
+
+function draw_serie_list(name,data,render_to,title) {
+
+	var html = '';
+	html += '<div class="span4"><ul>';
+
+	$.each(data,function (i) {
+		html += '<li><a id="serie_'+ i + '" href="#">' + data[i].name;
+		html += '</a></li>';
+		});
+		
+    html += '</ul></div>';
+    
+    html += '<div class="span8">';
+      
+    html += '</div>';
+    
+  
+	$('#'+render_to).html(html);
+	
+	
+	$.each(data,function (i) {
+		$("#serie_" + i).on('click',function () {alert(data[i].display);});
+		});
+	
 }
