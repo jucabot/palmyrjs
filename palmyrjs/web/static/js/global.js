@@ -18,6 +18,43 @@ function stack_list(list) {
 	return stacked_list;
 }
 
+function roundNumber(num, dec) {
+	var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
+	return result;
+}
+
+function serie_std(serie)
+{
+	var mean = 0;
+	var count = 0;
+	var total = 0;
+	var std_serie = [];
+	var std = 0;
+
+	jQuery.each(serie, function(i, item) {
+		count += 1;
+		total += item[1];
+	});
+	
+	mean = total/(count*1.0);
+	
+	$.each(serie, function(i, item) {
+		
+		std += Math.pow(item[1] - mean,2);
+	});
+	
+	std = Math.sqrt(std/(count-1)*1.0);
+	
+	$.each(serie, function(i, item) {
+		
+		std_serie.push([item[0], (item[1]-mean)/std] );
+	});
+	
+	
+	return std_serie;
+
+}
+
 function Template(template_id) {
 
 	this.template_id = template_id;
@@ -364,6 +401,7 @@ function draw_pie(name,x,render_to,title) {
 	options = {
 		chart: {
 			renderTo: render_to,
+			height: 300,
 		},
 		credits: {
 			enabled: false
@@ -398,6 +436,7 @@ function draw_pie(name,x,render_to,title) {
 	};
 
 	chart = new Highcharts.Chart(options);
+	
 
 }
 
@@ -414,6 +453,7 @@ function draw_bar(name,data,render_to,title,yTitle,min,show_label) {
 			renderTo: render_to,
 			type: 'column',
 			zoomType: 'x',
+			height : 400,
 		},
 		credits: {
 			enabled: false
@@ -482,6 +522,7 @@ function draw_percent_stacked_bar(name,data,render_to,title,yTitle,min,show_labe
 			renderTo: render_to,
 			type: 'column',
 			zoomType: 'x',
+			height : 400,
 		},
 		credits: {
 			enabled: false
@@ -821,7 +862,8 @@ function draw_scatter(name,data,render_to,title,xTitle,yTitle,show_label) {
 		chart: {
 			renderTo: render_to,
 			type: 'scatter',
-            zoomType: 'xy'
+            zoomType: 'xy',
+            height : 400,
 		},
 		credits: {
 			enabled: false
@@ -895,6 +937,7 @@ function draw_box_plot(name,data,render_to,title)
 		        type: 'boxplot',
 		        renderTo: render_to,
 		        zoomType:'xy',
+		        height : 400,
 		    },
 		    
 		    title: {
@@ -968,7 +1011,8 @@ function draw_timeline(name,data,render_to,title) {
 		chart: {
 			renderTo: render_to,
 			type: 'spline',
-            zoomType: 'x'
+            zoomType: 'x',
+            height : 400,
 		},
 		credits: {
 			enabled: false
@@ -1016,6 +1060,11 @@ function draw_timeline(name,data,render_to,title) {
 	{
 		serie = data.series[i];
 		serie.data = parse_dateserie(serie.data);
+		
+		if (data.series.length > 1) {
+			serie.data = serie_std(serie.data);
+			
+		}
 		//data.series[i] = serie;
 	}
 	

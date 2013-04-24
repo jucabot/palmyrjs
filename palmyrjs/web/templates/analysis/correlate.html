@@ -46,7 +46,7 @@
 						<div id="filter-info"></div>
 	</div>
 						
-						<div id="result"></div>
+						<div id="result" class="span12"></div>
 						
 						
 					</div>
@@ -95,6 +95,9 @@ var target_url = '{% url 'summary-analysis' %}?dpath={{ dpath }}';
 
 var ftcmd = new FeatureTableCommand(api_url,ftable_name);
 
+var result_index = 0;
+var queries = [];
+
 var current_filter;
 var current_filter_name;
 
@@ -124,42 +127,62 @@ $('#query-form').submit(function() {
 });
 
 function display_result(type,data,query) {
+
+	result_index += 1;
+
+	var result_hook = 'result_' + result_index;
+	
+	$('#result').prepend('<div id="' + result_hook + '"/>');
 	
 	if (type == 'table') {
-		draw_table('',data,'result','All features');
+		$('#' + result_hook).addClass('span12');
+	
+		draw_table('',data,result_hook,'All features');
 	}
 	else if (type == 'box-plot') {
 		//draw_bar('',data,'result',query,'frequency %');
-		draw_box_plot('',data,'result');
+		$('#' + result_hook).addClass('span6');
+		draw_box_plot('',data,result_hook);
 	}
 	else if (type == 'stacked-bar') {
-		draw_percent_stacked_bar('',data,'result',query,'frequency %');
-		//draw_mosaic_box('',data,'result',query,data.label_x,data.label_y);
+		$('#' + result_hook).addClass('span6');
+	
+		draw_percent_stacked_bar('',data,result_hook,query,'frequency %');
+		//draw_mosaic_box('',data,result_hook,query,data.label_x,data.label_y);
 	}
 	else if (type == 'scatter') {
-		draw_scatter('',data,'result',query,'frequency %');
+		$('#' + result_hook).addClass('span6');
+	
+		draw_scatter('',data,result_hook,query,'frequency %');
 	}
 	else if (type == 'pie') {
-		draw_pie('',data,'result',query);
+		$('#' + result_hook).addClass('span4');
+		draw_pie('',data,result_hook,query);
 	}
 	else if (type == 'bar') {
-		draw_bar('',data,'result',query,'frequency %');
+		$('#' + result_hook).addClass('span6');
+		draw_bar('',data,result_hook,query,'frequency %');
 	}
 	else if (type == 'wordcloud') {
-		draw_wordcloud('',data,'result',query);
+		$('#' + result_hook).addClass('span6');
+	
+		draw_wordcloud('',data,result_hook,query);
 	}
 	else if (type == 'timeline') {
-		draw_timeline('',data,'result',query);
+		$('#' + result_hook).addClass('span6');
+	
+		draw_timeline('',data,result_hook,query);
 	}
 	else {
+		$('#' + result_hook).addClass('span12');
+	
 		$('#result').html('Oops! There is no data vizualisation for this query');
 		return;
 	}
-	//$('#result').height(0);
-	$('#result').append('<br/><br/>');
-	//$('#result').height($('#result').height()+100);
-	
+	$('#' + result_hook).append('<br/><br/>');	
 	$('#query-result-toolbar').removeClass('hidden');
+	
+	queries.push({ 'hook' : result_hook, 'query' : query, 'display_type' : type }); 
 }
 
 {% include "analysis/inc_add_filter_script.js" %}
