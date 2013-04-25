@@ -55,6 +55,20 @@ function serie_std(serie)
 
 }
 
+
+
+function convert_dict_to_tuples(dictionary)
+{
+	var serie = [];
+	
+	for (var key in dictionary)
+	{
+		
+		serie.push([key, dictionary[key]]);
+	}
+	return serie;
+}
+
 function Template(template_id) {
 
 	this.template_id = template_id;
@@ -413,12 +427,12 @@ function draw_result(type,data,query,result_hook) {
 		//draw_mosaic_box('',data,result_hook,query,data.label_x,data.label_y);
 	}
 	else if (type == 'scatter') {
-		$('#' + result_hook).addClass('span6');
+		$('#' + result_hook).addClass('span12');
 	
 		draw_scatter('',data,result_hook,query,'frequency %');
 	}
 	else if (type == 'pie') {
-		$('#' + result_hook).addClass('span4');
+		$('#' + result_hook).addClass('span12');
 		draw_pie('',data,result_hook,query);
 	}
 	else if (type == 'bar') {
@@ -450,14 +464,17 @@ function draw_result(type,data,query,result_hook) {
 
 }
 
-function draw_pie(name,x,render_to,title) {
+function draw_pie(name,data,render_to,title) {
 	var chart;
 		
 	var options;
+	
+	
+	
 	options = {
 		chart: {
 			renderTo: render_to,
-			height: 300,
+			height: 400,
 		},
 		credits: {
 			enabled: false
@@ -484,13 +501,22 @@ function draw_pie(name,x,render_to,title) {
 			{
 				type: 'pie',
 				name: title,
-			  	data : x.sort(function(a,b) {return a[1]-b[1]}).reverse().map(function (xy) { return [String(xy[0]),xy[1]];}),
+			  	data : [],
 			  	
 			 }
 		]
 		
 	};
 
+	var x = [];
+	
+	for (var i=0; i<data.categories.length; i++) {
+		
+		x.push([String(data.categories[i]),data.series[0].data[i]]);
+	}
+	
+	options.series[0].data = x.sort(function(a,b) {return a[1]-b[1];}).reverse();
+	
 	chart = new Highcharts.Chart(options);
 	
 
@@ -640,9 +666,9 @@ function draw_percent_stacked_bar(name,data,render_to,title,yTitle,min,show_labe
 
 function draw_wordcloud(name,data,render_to,title) {
 
-	$('#' + render_to).html('');
+	$('#' + render_to).html('<p class="text-center lead">' + title + '</p>');
 	var fill = d3.scale.category20b();
-	var w = 800;
+	var w = 700;
 	var h = 400;
 	var max_words = 100;
 	var scale_factor = 128; //100% --> font size
@@ -1112,19 +1138,21 @@ function draw_timeline(name,data,render_to,title) {
 	
 	};
 	
+	var series = [];
+	
 	for (var i=0;i<data.series.length;i++)
 	{
 		serie = data.series[i];
-		serie.data = parse_dateserie(serie.data);
+		series.push({ 'name' : serie.name, 'data' : parse_dateserie(serie.data)});
 		
 		if (data.series.length > 1) {
-			serie.data = serie_std(serie.data);
+			series[i].data = serie_std(series[i].data);
 			
 		}
-		//data.series[i] = serie;
+		
 	}
 	
-	options.series = data.series; 
+	options.series = series; 
 	
 	chart = new Highcharts.Chart(options);
 
@@ -1142,7 +1170,7 @@ function parse_dateserie(data) {
 function draw_serie_list(name,data,render_to,title) {
 
 	var html = '';
-	html += '<div class="span4"><ul>';
+	html += '<div class="span3"><ul>';
 
 	$.each(data,function (i) {
 		html += '<li><a id="serie_'+ i + '" href="#">' + data[i].name;
@@ -1151,7 +1179,7 @@ function draw_serie_list(name,data,render_to,title) {
 		
     html += '</ul></div>';
     
-    html += '<div class="span8">';
+    html += '<div id="display_result" class="span7">';
       
     html += '</div>';
     
@@ -1160,7 +1188,7 @@ function draw_serie_list(name,data,render_to,title) {
 	
 	
 	$.each(data,function (i) {
-		$("#serie_" + i).on('click',function () {alert(data[i].display);});
+		$("#serie_" + i).on('click',function () {draw_result(data[i].display,data[i].data,data[i].name,'display_result');});
 		});
 	
 }
