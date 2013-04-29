@@ -87,6 +87,76 @@ function Template(template_id) {
 
 }
 
+function Slider()
+{
+	
+	
+	this.slides = [];
+	this.current = 0;
+	
+	this.init = function() {
+
+	}
+	
+	this.add_slide = function (id) {
+	
+		this.slides.push(id);
+		
+	};
+	
+	this.start = function () {
+		this.hide_all();
+		this.show(this.slides[0]);
+		
+	};
+	
+	this.show = function (id) {
+		this.hide_all();
+		$(id).show();
+		this.current = this.slides.indexOf(id);
+		
+		
+	};
+	
+	this.hide_all = function () {
+		$.each(this.slides,function (index,value) { $(value).hide(); });
+	};
+	
+	
+	this.next = function (callback) {
+		var self = this;
+		$(this.slides[this.current]).hide("slide",{direction:'left'}, function () {self._show_next();});
+		
+	};
+	
+	this._show_next = function() {
+		
+		var next_index = (this.current + 1) % this.slides.length;
+		$(this.slides[next_index]).show("slide",{direction:'right'});
+		this.current = next_index;
+	};
+	
+	this.previous = function () {
+		var self = this;
+		$(this.slides[this.current]).hide("slide",{direction:'right'}, function() {self._hide_previous();});
+		
+	};
+	
+	this._hide_previous = function() {
+		var next_index = (this.current-1) % this.slides.length;
+		$(this.slides[next_index]).show("slide",{direction:'left'});
+		this.current = next_index;
+	};
+	
+	this.has_slide = function(id) {
+		return this.slides.indexOf(id);
+	}
+
+
+	this.init();
+}
+
+
 
 function GeneralCommand(api_url,ftable_name)
 {
@@ -137,6 +207,48 @@ function GeneralCommand(api_url,ftable_name)
 
 	this.init();
 }
+
+function SearchCommand(api_url)
+{
+	this.url = api_url;
+	
+	this.init = function() {
+
+	}
+	
+	this._call_api = function (data, done) {
+		$("body").css("cursor", "progress");
+		return $.getJSON(
+			this.url,
+			data,
+			function(data) {
+				if (data.status == 'success' && done != null) {
+					done(data);
+					$('#message').html('');
+				}
+				
+				if (typeof data.message != "undefined" && data.message != '') {
+					$('#message').html('<div class="alert alert-' + data.status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + capFirstLetter(data.status) + '!</strong><br/>' + data.message + '</div>');
+				}
+				$("body").css("cursor", "auto");
+			});
+
+	}
+	
+	this.search = function (query,done) {
+		var cmd = 'search';
+		this._call_api(
+			{ 'cmd':cmd, 'query': query},
+			function(response) {
+				done(response.type,response.data,response.query);
+			});
+		
+	}
+	
+
+	this.init();
+}
+
 
 function FeatureTableCommand(api_url,ftable_name)
 {

@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block style %}
+<style>
+<!--
+.sub-nav {
+	background-color : lightgr;
+	background-image: -webkit-linear-gradient(top, grey, lightgrey);
+	
+	
+
+}
+.sub-nav-container {
+	margin-left:58px;
+	margin-right:58px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	
+
+}
+
+.form-search-box {
+	
+	margin: auto;
+	margin-top:10px;
+}
+
+
+
+#domains {
+
+	margin-top:15%;
+	vertical-align: middle;
+}
+
+#workspaces {
+
+	margin-top:15%;
+	vertical-align: middle;
+}
+
+#search-results {
+
+	margin-top:10%;
+	vertical-align: middle;
+}
+
+
+
+
+
+-->
+</style>
+{% endblock %}
+
+{% block sub-nav %}
+<div class="sub-nav">
+	<div class="sub-nav-container">
+		<div class="row-fluid">
+			<div class="span2"></div>
+			<div class="span10">
+				<form class="form form-search-box">
+			     		<div class="input-append">
+				  		<input id="search-query" type="text" class="input-xxlarge"  placeholder="Rechercher des séries de données par mots clefs...">
+				  		<button type="submit" class="btn btn-primary" onclick="search();return false;"><i class="icon-search icon-white"></i> Rechercher</button>
+				  		<button class="btn btn-success"><i class="icon-random icon-white"></i> Correler</button>
+				  	</div>
+				</form>
+				
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div id="message" class="after-sub-nav"></div>
+
+<div  class="row-container after-sub-nav hide" id="domains">
+	<p class="text-center lead">Recherche par domaines</p>
+	<div class="row">
+	  	
+	  	<div class="span1">	
+			
+		</div>
+	  	
+	  	<div class="span10">
+	  		<div class="row-fluid">
+		 	{% for domain in domains %}
+		  		<div class="span3" >
+			  		<p class="text-center">
+				  		<a href="#"><img src="{{ STATIC_PREFIX }}/img/domain-icons/{{ domain.icon_path }}" /></a>
+				  		<br/><span>{{ domain.name }} </span>
+				  		</p>
+		  		</div>
+			{% endfor %}
+			</div>
+		</div>
+		
+		<div class="span1">	
+			<a href="#" onclick="slider.next();"><img src="{{ STATIC_PREFIX }}/img/chevron-right.png" /></a>
+		</div>
+	</div>
+</div>
+<div  class="row-container after-sub-nav hide" id="workspaces">
+	<div class="row">
+	  	<p class="text-center lead">Mes espaces de travail</p>
+	  	<div class="span1">	
+			<a href="#"  onclick="slider.previous();"><img src="{{ STATIC_PREFIX }}/img/chevron-left.png" /></a>
+		</div>
+	  	
+	  	<div class="span10">
+	  		<div class="row-fluid">
+		 	{% for workspace in workspaces %}
+		  		<div class="span3" >
+			  		<p class="text-center">
+				  		<a href="#"><img src="{{ STATIC_PREFIX }}/img/workspace-icons/{{ workspace.icon_path }}" /></a>
+				  		<br/><span>{{ workspace.name }} </span>
+				  		</p>
+		  		</div>
+			{% endfor %}
+				
+			</div>
+		</div>
+		<div class="span1 ">	
+			<a href="#" onclick="slider.next();"><img src="{{ STATIC_PREFIX }}/img/chevron-right.png" /></a>	
+		</div>
+	</div>
+</div>
+
+<div  class="row-container after-sub-nav hide" id="search-results">
+	<div class="row">
+	  	<p class="text-center lead">Résultats de recherche</p>
+	  	<div class="span1">	
+			<a href="#"  onclick="slider.previous();"><img src="{{ STATIC_PREFIX }}/img/chevron-left.png" /></a>
+		</div>
+	  	
+	  	<div class="span10">
+	  		<div class="row-fluid">
+		 		<div id="search-results-hook"></div>
+			</div>	
+		</div>
+		
+		<div class="span1">	
+			
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+var api_url = '{% url 'search-api' %}';
+
+var search_api = new SearchCommand(api_url);
+
+var result_index = 0;
+var queries = [];
+
+var slider = new Slider();
+
+$(function () {
+
+	
+
+	slider.add_slide("#domains");
+	slider.add_slide("#workspaces");
+	
+	slider.start();
+	
+
+});
+
+function toggle_domains() {
+	$('#domains').toggle("slide",{direction:'left'}, function() {$('#workspaces').toggle("slide",{direction:'right'});});
+}
+
+function toggle_workspaces() {
+	$('#workspaces').toggle("slide",{direction:'right'}, function() {$('#domains').toggle("slide",{direction:'left'});});
+}
+
+function search() {
+
+	var query = $('#search-query').val();
+	
+	if (query != '') {
+		search_api.search(query, display_result);
+	}
+	
+}
+
+
+function display_result(type,data,query) {
+
+	result_index += 1;
+
+	if (slider.has_slide("#search-results")) {
+		slider.add_slide("#search-results");
+	}
+	slider.show('#search-results');
+
+	var result_hook = 'result_' + result_index;
+	
+	$('#search-results-hook').prepend('<div id="' + result_hook + '"/>');
+	
+	draw_result(type,data,query,result_hook);
+	
+	queries.push({ 'hook' : result_hook, 'query' : query, 'display_type' : type }); 
+}
+
+</script>
+
+
+{% endblock %}
+
