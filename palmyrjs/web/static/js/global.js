@@ -245,16 +245,35 @@ function SearchCommand(api_url)
 		
 	}
 	
-	this.create_workspace = function (serie_id,done) {
+	this.open_workspace = function (serie_id,done) {
 		var cmd = 'open-workspace';
 		this._call_api(
 			{ 'cmd':cmd, 'serie_id': serie_id},
 			function(response) {
-				done(response.name);
+				done(response.name,response.data);
 			});
 		
 	}
 	
+	this.remove_workspace = function (id,done) {
+		var cmd = 'remove-workspace';
+		this._call_api(
+			{ 'cmd':cmd, 'id': id},
+			function(response) {
+				done();
+			});
+		
+	}
+	
+	this.get_workspaces = function (done) {
+		var cmd = 'get-workspaces';
+		this._call_api(
+			{ 'cmd':cmd, },
+			function(response) {
+				done(response.workspaces);
+			});
+		
+	}
 
 	this.init();
 }

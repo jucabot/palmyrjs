@@ -15,18 +15,17 @@
      <div class="nav-collapse collapse">
        <ul class="nav pull-left">
         <li {% ifequal active_menu "search" %} class="active" {% endifequal %}><a href="{% url 'search' %}">Explorer</a></li>
-        <li {% ifequal active_menu "datahub" %} class="active" {% endifequal %}><a href="{% url 'browse-datahub' %}">Explore</a></li>
-        <li {% ifequal active_menu "datasource" %} class="active" {% endifequal %}><a href="{% url 'browse-datasource' %}">My Dataset</a></li>
-		<li {% ifequal active_menu "analysis" %} class="active" {% endifequal %}><a href="{% url 'browse-analysis' %}">Analyze</a></li>
+        <li {% ifequal active_menu "datasource" %} class="active" {% endifequal %}><a href="{% url 'browse-datasource' %}">Mes données</a></li>
+		<li {% ifequal active_menu "analysis" %} class="active" {% endifequal %}><a href="{% url 'browse-analysis' %}">Analyser</a></li>
 		
 
        </ul>
        <ul class="nav pull-right">
          <li><a href="/admin">Admin</a></li>
          <li>
-         	<a href="#">Preferences</a>
+         	<a href="#">Préferences</a>
          </li>
-         <li><a href="{% url 'logout' %}">Logout</a></li>
+         <li><a href="{% url 'logout' %}">Déconnexion</a></li>
        </ul>
      </div><!--/.nav-collapse -->
 {% endblock %}
