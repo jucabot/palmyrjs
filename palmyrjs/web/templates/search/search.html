@@ -196,6 +196,10 @@ function search_serie(query) {
 
 function display_result(type,data,query) {
 
+	if (queries.indexOf(query) >= 0) {
+		return;
+	}
+	
 	if (type == 'serie-list') {
 		if (!slider.has_slide("#search-list")) {
 				slider.add_slide("#search-list");
@@ -219,9 +223,10 @@ function display_result(type,data,query) {
 		$('#' + result_hook).addClass('span6');
 		draw_result(type,data,query,result_hook);
 		
-		//queries.push({ 'hook' : result_hook, 'query' : query, 'display_type' : type });
+		queries.push(query);
+		//{ 'hook' : result_hook, 'query' : query, 'display_type' : type });
 		if (type == 'timeline' && data.series.length == 1) {
-			$('#' + result_hook).prepend('<button class="btn btn-mini pull-right" title="Analyser cette variable" onclick="open_workspace(\'' + query + '\');"><i class="icon-globe"></i></button>');
+			$('#' + result_hook).prepend('<button class="btn btn-mini pull-right" title="Analyser cette variable" onclick="create_workspace(\'' + query + '\');"><i class="icon-globe"></i></button>');
 		}
 		
 	} 
@@ -272,6 +277,13 @@ function draw_serie_list(data,render_to,title) {
 }
 
 function open_workspace(serie_id) {
+	search_api.open_workspace(serie_id, function(name,data) { 
+			update_workspace(name,data);
+			search_serie(name);
+		});
+}
+
+function create_workspace(serie_id) {
 	search_api.open_workspace(serie_id, update_workspace);
 }
 
@@ -279,7 +291,7 @@ function update_workspace(name,data) {
 	current_workspace = {'name':name, 'data':data};
 	$('#current-workspace').html('<a id="current-workspace-btn" class="text-center" href="#"><i class="icon-globe icon-white"></i> '  + name + '</a>');
 	$('#current-workspace-btn').on("click", function () {search_serie(name);return false;});
-	search_serie(name);
+	
 }
 
 function remove_workspace(id) {
