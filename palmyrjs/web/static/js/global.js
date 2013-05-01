@@ -149,7 +149,7 @@ function Slider()
 	};
 	
 	this.has_slide = function(id) {
-		return this.slides.indexOf(id);
+		return this.slides.indexOf(id) > 0;
 	}
 
 
@@ -241,6 +241,16 @@ function SearchCommand(api_url)
 			{ 'cmd':cmd, 'query': query},
 			function(response) {
 				done(response.type,response.data,response.query);
+			});
+		
+	}
+	
+	this.create_workspace = function (serie_id,done) {
+		var cmd = 'open-workspace';
+		this._call_api(
+			{ 'cmd':cmd, 'serie_id': serie_id},
+			function(response) {
+				done(response.name);
 			});
 		
 	}
@@ -520,59 +530,40 @@ function FeatureTableCommand(api_url,ftable_name)
 }
 
 function draw_result(type,data,query,result_hook) {
-
-		
-	if (type == 'table') {
-		$('#' + result_hook).addClass('span12');
 	
-		draw_table('',data,result_hook,'All features');
+	
+	$('#' + result_hook)[0].style.marginLeft = 0;
+	
+	if (type == 'table') {
+		return draw_table('',data,result_hook,'All features');
 	}
 	else if (type == 'box-plot') {
-		//draw_bar('',data,'result',query,'frequency %');
-		$('#' + result_hook).addClass('span6');
-		draw_box_plot('',data,result_hook);
+		//return draw_bar('',data,'result',query,'frequency %');
+		return draw_box_plot('',data,result_hook);
 	}
 	else if (type == 'stacked-bar') {
-		$('#' + result_hook).addClass('span6');
-	
-		draw_percent_stacked_bar('',data,result_hook,query,'frequency %');
+		return draw_percent_stacked_bar('',data,result_hook,query,'frequency %');
 		//draw_mosaic_box('',data,result_hook,query,data.label_x,data.label_y);
 	}
 	else if (type == 'scatter') {
-		$('#' + result_hook).addClass('span12');
-	
-		draw_scatter('',data,result_hook,query,'frequency %');
+		return draw_scatter('',data,result_hook,query,'frequency %');
 	}
 	else if (type == 'pie') {
-		$('#' + result_hook).addClass('span12');
-		draw_pie('',data,result_hook,query);
+		return draw_pie('',data,result_hook,query);
 	}
 	else if (type == 'bar') {
-		$('#' + result_hook).addClass('span12');
-		draw_bar('',data,result_hook,query,'frequency %');
+		return draw_bar('',data,result_hook,query,'frequency %');
 	}
 	else if (type == 'wordcloud') {
-		$('#' + result_hook).addClass('span12');
-	
-		draw_wordcloud('',data,result_hook,query);
+		return draw_wordcloud('',data,result_hook,query);
 	}
 	else if (type == 'timeline') {
-		$('#' + result_hook).addClass('span6');
-	
-		draw_timeline('',data,result_hook,query);
-	}
-	else if (type == 'serie-list') {
-		$('#' + result_hook).addClass('span12');
-	
-		draw_serie_list('',data,result_hook,query);
+		return draw_timeline('',data,result_hook,query);
 	}
 	else {
-		$('#' + result_hook).addClass('span12');
-	
 		$('#result').html('Oops! There is no data vizualisation for this query');
 		return;
 	}
-	$('#' + result_hook).append('<br/><br/>');	
 
 }
 
@@ -776,11 +767,13 @@ function draw_percent_stacked_bar(name,data,render_to,title,yTitle,min,show_labe
 }
 
 
-function draw_wordcloud(name,data,render_to,title) {
+function draw_wordcloud(name,data,render_to,query) {
 
-	$('#' + render_to).html('<p class="text-center lead">' + title + '</p>');
+	if (data.description != undefined)
+		$('#' + render_to).html('<p class="text-center lead">' + query + '</p>');
+	
 	var fill = d3.scale.category20b();
-	var w = 700;
+	var w = 470;
 	var h = 400;
 	var max_words = 100;
 	var scale_factor = 128; //100% --> font size
@@ -825,6 +818,7 @@ function draw_wordcloud(name,data,render_to,title) {
 	      .fontSize(function(d) { return d.size; })
 	      .on("end", draw)
 	      .start();
+	
 	
 	 function draw(words) {
     	d3.select("#" + render_to).append("svg")
@@ -1213,8 +1207,13 @@ function draw_timeline(name,data,render_to,title) {
 		},
 		title: {
 			text: title,
-			x: -20 //center
+			
 		},
+		subtitle: {
+			text:  ''
+			
+		},
+
 		xAxis: {
 			title: {
                     enabled: true,
@@ -1233,10 +1232,7 @@ function draw_timeline(name,data,render_to,title) {
                 title: {
                     text: data.label_y,
                 },
-                minorTickInterval: 1.0,
-                startOnTick: true,
-		        endOnTick: true,
-		        showLastLabel: true
+             
         },
 		tooltip: {
 			formatter: function() {
@@ -1257,16 +1253,23 @@ function draw_timeline(name,data,render_to,title) {
 		serie = data.series[i];
 		series.push({ 'name' : serie.name, 'data' : parse_dateserie(serie.data)});
 		
-		if (data.series.length > 1) {
+		if (data.series.length  > 1) {
 			series[i].data = serie_std(series[i].data);
 			
 		}
 		
 	}
 	
-	options.series = series; 
+	options.series = series;
+	
+	if (data.description != undefined)
+		options.subtitle.text = data.description;
 	
 	chart = new Highcharts.Chart(options);
+	
+	if (data.description != undefined)
+		$('#'+render_to).append('<p class="pull-right"><i>source : ' + data.source + ' / zone : ' +  data.zone + '</i></p>');
+	
 
 }
 
@@ -1279,28 +1282,3 @@ function parse_dateserie(data) {
 	return date_data.sort(function (a,b) { return a[0] - b[0]; });
 }
 
-function draw_serie_list(name,data,render_to,title) {
-
-	var html = '';
-	html += '<div class="span3"><ul>';
-
-	$.each(data,function (i) {
-		html += '<li><a id="serie_'+ i + '" href="#">' + data[i].name;
-		html += '</a></li>';
-		});
-		
-    html += '</ul></div>';
-    
-    html += '<div id="display_result" class="span7">';
-      
-    html += '</div>';
-    
-  
-	$('#'+render_to).html(html);
-	
-	
-	$.each(data,function (i) {
-		$("#serie_" + i).on('click',function () {draw_result(data[i].display,data[i].data,data[i].name,'display_result');});
-		});
-	
-}

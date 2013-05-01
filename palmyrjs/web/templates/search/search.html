@@ -4,51 +4,11 @@
 {% block style %}
 <style>
 <!--
-.sub-nav {
-	background-color : lightgr;
-	background-image: -webkit-linear-gradient(top, grey, lightgrey);
-	
-	
 
+dd {
+
+	margin-bottom : 10px;
 }
-.sub-nav-container {
-	margin-left:58px;
-	margin-right:58px;
-	margin-top: 0px;
-	margin-bottom: 0px;
-	
-
-}
-
-.form-search-box {
-	
-	margin: auto;
-	margin-top:10px;
-}
-
-
-
-#domains {
-
-	margin-top:15%;
-	vertical-align: middle;
-}
-
-#workspaces {
-
-	margin-top:15%;
-	vertical-align: middle;
-}
-
-#search-results {
-
-	margin-top:10%;
-	vertical-align: middle;
-}
-
-
-
-
 
 -->
 </style>
@@ -63,7 +23,7 @@
 				<form class="form form-search-box">
 			     		<div class="input-append">
 				  		<input id="search-query" type="text" class="input-xxlarge"  placeholder="Rechercher des séries de données par mots clefs...">
-				  		<button type="submit" class="btn btn-primary" onclick="search();return false;"><i class="icon-search icon-white"></i> Rechercher</button>
+				  		<button type="submit" class="btn btn-primary" onclick="search_serie();return false;"><i class="icon-search icon-white"></i> Rechercher</button>
 				  		<button class="btn btn-success"><i class="icon-random icon-white"></i> Correler</button>
 				  	</div>
 				</form>
@@ -78,7 +38,7 @@
 
 <div id="message" class="after-sub-nav"></div>
 
-<div  class="row-container after-sub-nav hide" id="domains">
+<div  class="row-container  hide" id="domains">
 	<p class="text-center lead">Recherche par domaines</p>
 	<div class="row">
 	  	
@@ -91,7 +51,7 @@
 		 	{% for domain in domains %}
 		  		<div class="span3" >
 			  		<p class="text-center">
-				  		<a href="#"><img src="{{ STATIC_PREFIX }}/img/domain-icons/{{ domain.icon_path }}" /></a>
+				  		<a href="#" onclick="search_serie('category:{{ domain.key }}');return false;"><img src="{{ STATIC_PREFIX }}/img/domain-icons/{{ domain.icon_path }}" /></a>
 				  		<br/><span>{{ domain.name }} </span>
 				  		</p>
 		  		</div>
@@ -100,15 +60,15 @@
 		</div>
 		
 		<div class="span1">	
-			<a href="#" onclick="slider.next();"><img src="{{ STATIC_PREFIX }}/img/chevron-right.png" /></a>
+			<p class="text-right"><a href="#" onclick="slider.next();"><img src="{{ STATIC_PREFIX }}/img/chevron-right.png" /></a></p>
 		</div>
 	</div>
 </div>
-<div  class="row-container after-sub-nav hide" id="workspaces">
+<div  class="row-container hide" id="workspaces">
 	<div class="row">
 	  	<p class="text-center lead">Mes espaces de travail</p>
 	  	<div class="span1">	
-			<a href="#"  onclick="slider.previous();"><img src="{{ STATIC_PREFIX }}/img/chevron-left.png" /></a>
+			<p class="text-left"><a href="#"  onclick="slider.previous();"><img src="{{ STATIC_PREFIX }}/img/chevron-left.png" /></a></p>
 		</div>
 	  	
 	  	<div class="span10">
@@ -117,7 +77,7 @@
 		  		<div class="span3" >
 			  		<p class="text-center">
 				  		<a href="#"><img src="{{ STATIC_PREFIX }}/img/workspace-icons/{{ workspace.icon_path }}" /></a>
-				  		<br/><span>{{ workspace.name }} </span>
+				  		<br/><span>{{ workspace.name }} <a href="#" onclick="remove_workspace('{{ workspace.id }}'; return false;)"><i class="icon-remove"></i></a></span>
 				  		</p>
 		  		</div>
 			{% endfor %}
@@ -125,16 +85,16 @@
 			</div>
 		</div>
 		<div class="span1 ">	
-			<a href="#" onclick="slider.next();"><img src="{{ STATIC_PREFIX }}/img/chevron-right.png" /></a>	
+			<p class="text-right"><a href="#" onclick="slider.next();"><img src="{{ STATIC_PREFIX }}/img/chevron-right.png" /></a></p>	
 		</div>
 	</div>
 </div>
 
-<div  class="row-container after-sub-nav hide" id="search-results">
+<div  class="row-container hide" id="search-board">
 	<div class="row">
-	  	<p class="text-center lead">Résultats de recherche</p>
+	  	<p class="text-center lead"></p>
 	  	<div class="span1">	
-			<a href="#"  onclick="slider.previous();"><img src="{{ STATIC_PREFIX }}/img/chevron-left.png" /></a>
+			<p class="text-left"><a href="#"  onclick="slider.previous();"><img src="{{ STATIC_PREFIX }}/img/chevron-left.png" /></a></p>
 		</div>
 	  	
 	  	<div class="span10">
@@ -144,7 +104,28 @@
 		</div>
 		
 		<div class="span1">	
-			
+			<p class="text-right"><a href="#" onclick="slider.next();"><img src="{{ STATIC_PREFIX }}/img/chevron-right.png" /></a></p>
+		</div>
+	</div>
+</div>
+
+<div  class="row-container hide" id="search-list">
+	<div class="row">
+	  	
+	  	<div class="span1">	
+			<p class="text-left"><a href="#"  onclick="slider.previous();"><img src="{{ STATIC_PREFIX }}/img/chevron-left.png" /></a></p>
+		</div>
+	  	
+	  	<div class="span10">
+	  		<div class="row-fluid">
+		 		<div id="search-list-hook"></div>
+		 		<br/>
+		 		<br/>
+			</div>	
+		</div>
+		
+		<div class="span1">	
+			<p class="text-right"><a href="#" onclick="slider.next();"><img src="{{ STATIC_PREFIX }}/img/chevron-right.png" /></a></p>
 		</div>
 	</div>
 </div>
@@ -166,8 +147,6 @@ var slider = new Slider();
 
 $(function () {
 
-	
-
 	slider.add_slide("#domains");
 	slider.add_slide("#workspaces");
 	
@@ -176,17 +155,15 @@ $(function () {
 
 });
 
-function toggle_domains() {
-	$('#domains').toggle("slide",{direction:'left'}, function() {$('#workspaces').toggle("slide",{direction:'right'});});
-}
 
-function toggle_workspaces() {
-	$('#workspaces').toggle("slide",{direction:'right'}, function() {$('#domains').toggle("slide",{direction:'left'});});
-}
 
-function search() {
+function search_serie(query) {
 
-	var query = $('#search-query').val();
+	if (query == undefined) {
+		query = $('#search-query').val();
+	}
+	else
+		$('#search-query').val(query);
 	
 	if (query != '') {
 		search_api.search(query, display_result);
@@ -197,20 +174,91 @@ function search() {
 
 function display_result(type,data,query) {
 
-	result_index += 1;
-
-	if (slider.has_slide("#search-results")) {
-		slider.add_slide("#search-results");
+	if (type == 'serie-list') {
+		if (!slider.has_slide("#search-list")) {
+				slider.add_slide("#search-list");
+		}
+		
+		draw_serie_list(data,'#search-list-hook',query);
+		slider.show("#search-list");
 	}
-	slider.show('#search-results');
+	else
+	{
+		result_index += 1;
+	
+		if (!slider.has_slide("#search-board")) {
+			slider.add_slide("#search-board");
+		}
+		slider.show('#search-board');
+	
+		var result_hook = 'result_' + result_index;
+		
+		$('#search-results-hook').prepend('<div id="' + result_hook + '"/>');
+		$('#' + result_hook).addClass('span6');
+		draw_result(type,data,query,result_hook);
+		
+		//queries.push({ 'hook' : result_hook, 'query' : query, 'display_type' : type });
+		if (type == 'timeline' && data.series.length == 1) {
+			$('#' + result_hook).prepend('<button class="btn btn-mini pull-right" title="Analyser cette variable" onclick="create_workspace(\'' + query + '\');"><i class="icon-globe"></i></button>');
+		}
+		
+	} 
+}
 
-	var result_hook = 'result_' + result_index;
+function draw_serie_list(data,render_to,title) {
+
+	var html = '';
+
+	html += '<div class="span4"><p class="text-left lead">Résultats de recherche</p>';
+
+	html += '<dl>';
+	$.each(data,function (i) {
+		html += '<dt><a id="serie_'+ i + '" href="#"><strong>' + data[i].name + '</strong></a>';
+		if (data[i].display == 'timeline') {
+			html += '<button class="btn btn-mini pull-right" title="Analyser cette variable" onclick="create_workspace(\'' + data[i].name + '\');"><i class="icon-globe"></i></button>';
+		}
+		
+		html += '</dt>';
+		html += '<dd>' + data[i].description + '</br>';
+		html += '<small><i>Source : ' + data[i].source + ' Zone : ' + data[i].zone + '</i></small></dd>';
+		
+		});
+		
+    html += '</dl></div>';
+
+   
+   	html += '<div id="display_result" class="span8">';
+    if (data.length == 0) {
+    	html += '<p class="text-info">Oups! Il n\'y a pas de résultat pour cette recheche ' + title + '</p>';
+    }
+    html += '</div>';
+  	
+	$(render_to).html(html);
+
+	var result_hook = 'display_result';
+	$.each(data,function (i) {
+		$("#serie_" + i).on('click',function () {
+				var data_ctx = data[i].data;
+				data_ctx['description'] = data[i]['description']
+            	data_ctx['source'] = data[i]['source']
+            	data_ctx['zone'] = data[i]['zone']
+				draw_result(data[i].display,data_ctx,data[i].name,result_hook);
+				$('#' + result_hook).addClass('span12');
+			});
+		});
 	
-	$('#search-results-hook').prepend('<div id="' + result_hook + '"/>');
-	
-	draw_result(type,data,query,result_hook);
-	
-	queries.push({ 'hook' : result_hook, 'query' : query, 'display_type' : type }); 
+}
+
+function create_workspace(serie_id) {
+	search_api.create_workspace(serie_id, update_workspace);
+}
+
+function update_workspace(name) {
+	alert(name);
+}
+
+function remove_workspace(id) {
+	alert(id);
 }
 
 </script>

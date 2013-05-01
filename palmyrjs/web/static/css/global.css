@@ -91,3 +91,32 @@ footer p {
 	margin-bottom: 15px;
 	padding: 7px 9px;
 }
+
+
+/* search.html */
+
+.sub-nav {
+	background-color : lightgr;
+	background-image: -webkit-linear-gradient(top, grey, lightgrey);
+	
+}
+.sub-nav-container {
+	margin-left:58px;
+	margin-right:58px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	
+
+}
+
+.after-sub-nav {
+
+	margin:100px auto;
+
+}
+
+.form-search-box {
+	
+	margin: auto;
+	margin-top:10px;
+}
