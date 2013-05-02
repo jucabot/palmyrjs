@@ -245,6 +245,16 @@ function SearchCommand(api_url)
 		
 	}
 	
+	this.correlate = function (query,serie_data,done) {
+		var cmd = 'correlate';
+		this._call_api(
+			{ 'cmd':cmd, 'query': query},
+			function(response) {
+				done(response.data);
+			});
+		
+	}
+	
 	this.open_workspace = function (serie_id,done) {
 		var cmd = 'open-workspace';
 		this._call_api(
@@ -548,41 +558,61 @@ function FeatureTableCommand(api_url,ftable_name)
 
 }
 
+
+function remove_serie(query, result_hook) {
+	
+	queries.splice(queries.indexOf(query),1);
+	$("#" + result_hook).html('');
+	
+}
+
 function draw_result(type,data,query,result_hook) {
 	
+	var drawing = null;
 	
 	$('#' + result_hook)[0].style.marginLeft = 0;
 	
 	if (type == 'table') {
-		return draw_table('',data,result_hook,'All features');
+		drawing = draw_table('',data,result_hook,'All features');
 	}
 	else if (type == 'box-plot') {
 		//return draw_bar('',data,'result',query,'frequency %');
-		return draw_box_plot('',data,result_hook);
+		drawing = draw_box_plot('',data,result_hook);
 	}
 	else if (type == 'stacked-bar') {
-		return draw_percent_stacked_bar('',data,result_hook,query,'frequency %');
+		drawing = draw_percent_stacked_bar('',data,result_hook,query,'frequency %');
 		//draw_mosaic_box('',data,result_hook,query,data.label_x,data.label_y);
 	}
 	else if (type == 'scatter') {
-		return draw_scatter('',data,result_hook,query,'frequency %');
+		drawing = draw_scatter('',data,result_hook,query,'frequency %');
 	}
 	else if (type == 'pie') {
-		return draw_pie('',data,result_hook,query);
+		drawing = draw_pie('',data,result_hook,query);
 	}
 	else if (type == 'bar') {
-		return draw_bar('',data,result_hook,query,'frequency %');
+		drawing = draw_bar('',data,result_hook,query,'frequency %');
 	}
 	else if (type == 'wordcloud') {
-		return draw_wordcloud('',data,result_hook,query);
+		drawing = draw_wordcloud('',data,result_hook,query);
 	}
 	else if (type == 'timeline') {
-		return draw_timeline('',data,result_hook,query);
+		
+		if (current_workspace != undefined && current_workspace != null) {
+			if (current_workspace.name != query) {
+				var current_workspace_data = current_workspace.data;
+				data.series.push(current_workspace_data.series[0]);
+			}
+		}
+		
+		drawing = draw_timeline('',data,result_hook,query);
 	}
 	else {
 		$('#result').html('Oops! There is no data vizualisation for this query');
 		return;
 	}
+	
+	$('#' + result_hook).prepend('<a class="pull-right" href="#" title="Retirer" onclick="remove_serie(\'' + query + '\',\'' +result_hook+'\');return false;"><i class="icon-remove"></i></a>');
+	return drawing;
 
 }
 
@@ -1301,3 +1331,89 @@ function parse_dateserie(data) {
 	return date_data.sort(function (a,b) { return a[0] - b[0]; });
 }
 
+function Heatmap(options)
+{
+	this.options = options;
+	
+	
+	this.init = function() {
+	
+		var html = '<table width="100%"><tr><th></th>';
+		var cat_len = options.categories.length;
+		
+		for (var i=0; i<cat_len; i++)
+		{
+			html += "<th>lag-" + options.categories[i] + "</th>";
+		}
+		html += "</tr>";
+		
+		series_len = options.series.length;
+		
+		for (var i=0; i<series_len; i++)
+		{
+			html += '<tr><td><a href=\"#\" onclick=\"search_serie(\'' +options.series[i].name+ '\');return false;">' + options.series[i].name +  '</a></td>' ;
+			
+		
+			for (var j=0; j<cat_len; j++)
+			{
+				result = options.series[i].data[j];
+				if (result == null)
+				{
+					html += "<td></td>";
+				}
+				else
+				{
+					
+					if (result.r2 >= 0.7 )
+					{
+						html += "<td title=\"R²=" + result.r2 + "\" style=\"background-color:rgb(0," + Math.round(255-Math.abs(result.r2)*125) + "," + Math.round(255-Math.abs(result.r2)*125) + ")\"></td>";
+					}
+					else
+					{
+						html += "<td title=\"R²=" + result.r2 + "\" style=\"background-color:rgb(" + Math.round(255-Math.abs(result.r2)*255) + "," + Math.round(255-Math.abs(result.r2)*255) + ",255)\"></td>";
+												
+					}
+				}
+			}
+			
+			html += "</tr>";
+		}
+		
+		html += "</table>";
+		
+		$(options.renderTo).html(html);
+	
+	};
+	
+	this.init();
+
+}
+
+
+
+
+function draw_heatmap(name,data,render_to,title) {
+	
+		var options = {
+			renderTo : '#' + render_to,
+			categories : [],
+			series : []
+		};
+		
+		$.each(data, function(i,result) {
+			var serie = {
+					name : result.id,
+					data : result.results 
+			};						
+			options.series.push(serie);
+			
+		});
+		
+		for (category in options.series[0].data)
+		{
+			if (!isNaN(category))
+				options.categories.push(parseInt(category));
+		}
+		
+		heatmap = new Heatmap(options);	
+}

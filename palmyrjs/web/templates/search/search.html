@@ -11,15 +11,6 @@ dd {
 	margin-bottom : 10px;
 }
 
-.workspace-box {
-	margin: auto;
-	margin-top:10px;
-}
-
-.workspace-box a {
-	color : white;
-}
-
 
 -->
 </style>
@@ -29,15 +20,14 @@ dd {
 <div class="sub-nav">
 	<div class="sub-nav-container">
 		<div class="row-fluid">
-			<div class="span2 workspace-box">
-				<div id="current-workspace"></div>
-			</div>
-			<div class="span10">
+			<div class="span12">
 				<form class="form form-search-box">
-			     		<div class="input-append">
+			     	<div class="input-prepend input-append">
+			     		<span class="add-on"><div id="current-workspace"><a href="#" onclick="slider.show('#workspaces');return false;"><i id="current-workspace-icon" class="icon-globe"></i></a></div></span>
 				  		<input id="search-query" type="text" class="input-xxlarge"  placeholder="Rechercher des séries de données par mots clefs...">
 				  		<button type="submit" class="btn btn-primary" onclick="search_serie();return false;"><i class="icon-search icon-white"></i> Rechercher</button>
-				  		<button class="btn btn-success"><i class="icon-random icon-white"></i> Correler</button>
+				  		<button id="btn-correlation-search" class="btn btn-success" onclick="correlate_serie();return false;"><i class="icon-random icon-white"></i> Correler</button>
+					  	<button class="btn" id="btn-search-actions"><i class="icon-cog"></i></button>
 				  	</div>
 				</form>
 				
@@ -113,7 +103,7 @@ dd {
 
 <div  class="row-container hide" id="search-list">
 	<div class="row">
-	  	
+	  	<p class="text-center lead"></p>
 	  	<div class="span1">	
 			<p class="text-left"><a href="#"  onclick="slider.previous();"><img src="{{ STATIC_PREFIX }}/img/chevron-left.png" /></a></p>
 		</div>
@@ -131,6 +121,28 @@ dd {
 		</div>
 	</div>
 </div>
+
+<div  class="row-container hide" id="correlation-board">
+	<div class="row">
+	  	<p class="text-center lead"></p>
+	  	<div class="span1">	
+			<p class="text-left"><a href="#"  onclick="slider.previous();"><img src="{{ STATIC_PREFIX }}/img/chevron-left.png" /></a></p>
+		</div>
+	  	
+	  	<div class="span10">
+	  		<div class="row-fluid">
+		 		<div id="correlation-board-hook"></div>
+		 		<br/>
+		 		<br/>
+			</div>	
+		</div>
+		
+		<div class="span1">	
+			<p class="text-right"><a href="#" onclick="slider.next();"><img src="{{ STATIC_PREFIX }}/img/chevron-right.png" /></a></p>
+		</div>
+	</div>
+</div>
+
 {% raw %}
 
 <script id="template-workspace-list" type="text/dot.js">
@@ -176,6 +188,14 @@ $(function () {
 	
 	slider.start();
 	
+	var options = {
+			title: "Astuce",
+			content: "Sélectionner ou créer un espace de travail pour la variable à chercher.",
+			placement: 'bottom',
+			trigger:'manual',
+		};
+	$('#current-workspace').popover(options);
+	
 
 });
 
@@ -197,6 +217,7 @@ function search_serie(query) {
 function display_result(type,data,query) {
 
 	if (queries.indexOf(query) >= 0) {
+		slider.show('#search-board');
 		return;
 	}
 	
@@ -226,7 +247,7 @@ function display_result(type,data,query) {
 		queries.push(query);
 		//{ 'hook' : result_hook, 'query' : query, 'display_type' : type });
 		if (type == 'timeline' && data.series.length == 1) {
-			$('#' + result_hook).prepend('<button class="btn btn-mini pull-right" title="Analyser cette variable" onclick="create_workspace(\'' + query + '\');"><i class="icon-globe"></i></button>');
+			$('#' + result_hook).prepend('<a class="pull-right" href="#" title="Analyser cette variable" onclick="create_workspace(\'' + query + '\');return false;"><i class="icon-globe"></i></a>');
 		}
 		
 	} 
@@ -242,7 +263,7 @@ function draw_serie_list(data,render_to,title) {
 	$.each(data,function (i) {
 		html += '<dt><a id="serie_'+ i + '" href="#"><strong>' + data[i].name + '</strong></a>';
 		if (data[i].display == 'timeline') {
-			html += '<button class="btn btn-mini pull-right" title="Analyser cette variable" onclick="open_workspace(\'' + data[i].name + '\');"><i class="icon-globe"></i></button>';
+			html += '<a class="pull-right" href="#" title="Analyser cette variable" onclick="open_workspace(\'' + data[i].name + '\');return false;"><i class="icon-globe"></i></a>';
 		}
 		
 		html += '</dt>';
@@ -289,7 +310,7 @@ function create_workspace(serie_id) {
 
 function update_workspace(name,data) {
 	current_workspace = {'name':name, 'data':data};
-	$('#current-workspace').html('<a id="current-workspace-btn" class="text-center" href="#"><i class="icon-globe icon-white"></i> '  + name + '</a>');
+	$('#current-workspace').html('<a id="current-workspace-btn" class="text-center" href="#"><i class="icon-globe"></i> '  + name + '</a>');
 	$('#current-workspace-btn').on("click", function () {search_serie(name);return false;});
 	
 }
@@ -302,6 +323,28 @@ function update_workspaces() {
 	search_api.get_workspaces(function (workspaces) {
 		$('#workspace-list').html(workspace_list_template({'STATIC_PREFIX': static_prefix, 'workspaces': workspaces}));
 	});
+}
+
+function correlate_serie() {
+
+	if (current_workspace != undefined && current_workspace != null ) {
+		search_api.correlate(current_workspace.name,current_workspace.data, function (data,took) {
+			if (!slider.has_slide("#correlation-board")) {
+				slider.add_slide("#correlation-board");
+			}
+			draw_heatmap('',data,'correlation-board-hook',current_workspace.name);
+			slider.show('#correlation-board');
+		});
+	}
+	else {
+		
+		$('#current-workspace').popover('show');
+		
+		window.setTimeout(function () {$('#current-workspace').popover('hide');},2000);
+	}
+		
+
+
 }
 
 </script>
