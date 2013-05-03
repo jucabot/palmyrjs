@@ -5,7 +5,7 @@
 
 {% block content %}
 	
-	<h1>Analysis of {{ name }} <small>Define features and search for external correlations</small></h1>
+	<br/>
 	
 		<div id="message"></div>
 	
@@ -27,17 +27,17 @@
 						<thead>
 								<tr>		
 										<th></th>
-										<th>Name</th>
+										<th>Nom</th>
 										<th>Type</th>
-										<th>Has classes</th>
-										<th>Undef. value</th>
-										<th>Common value</th>
+										<th>Classes</th>
+										<th>Non définie</th>
+										<th>Valeur la + fréquente</th>
 										<th>Min</th>
-										<th>Mean</th>
+										<th>Moyenne</th>
 										<th>Max</th>
-										<th>Median</th>
-										<th>1stQuar.</th>
-										<th>3rdQuar.</th>
+										<th>Mediane</th>
+										<th>1erQuar.</th>
+										<th>3emeQuar.</th>
 										<th>Actions</th>
 								</tr>
 						</thead>
@@ -45,16 +45,16 @@
 							<tr {% if not feature.is_usable %} class="warning" {% endif %} >
 								<td>
 									{% ifequal fname ftable.target %}
-										<span class="label label-success">Target <i class="icon-remove icon-white clickable" onclick="ftcmd.reset_target(function () {document.location = target_url;});"></i></span>
+										<span class="label label-success">Cible <i class="icon-remove icon-white clickable" onclick="ftcmd.reset_target(function () {document.location = target_url;});"></i></span>
 									{% endifequal %}
 									{% if not feature.is_usable %}
-										<span class="label label-reverse">Discarded</span>
+										<span class="label label-reverse">Ecartée</span>
 									{% endif %} 
 									{% if feature.is_virtual %} 
-										<span class="label label-info">Virtual <i class="icon-edit icon-white clickable" onclick="ftcmd.get_feature('{{fname}}',display_edit_feature);"></i> <i class="icon-trash icon-white clickable" onclick="ftcmd.remove_feature('{{fname}}',function () {document.location = target_url;});"></i></span>
+										<span class="label label-info">Virtuelle <i class="icon-edit icon-white clickable" onclick="ftcmd.get_feature('{{fname}}',display_edit_feature);"></i> <i class="icon-trash icon-white clickable" onclick="ftcmd.remove_feature('{{fname}}',function () {document.location = target_url;});"></i></span>
 									{% endif %} 
 									{% if feature.is_sparse %} 
-										<span class="label label-warning">Low density <i class="icon-edit icon-white clickable" onclick="ftcmd.get_feature('{{fname}}',display_edit_feature);"></i></span>
+										<span class="label label-warning">Incomplet <i class="icon-edit icon-white clickable" onclick="ftcmd.get_feature('{{fname}}',display_edit_feature);"></i></span>
 									{% endif %} 
 								</td>
 								<td><a href="#{{ fname|slugify }}-modal" role="button" data-toggle="modal">{{ fname|default_if_none:'' }}</a></td>
@@ -63,7 +63,7 @@
 								<td>{% if feature.has_class %} 
 										<span class="label label-info">{{ feature.classes|length }} classes <i class="icon-remove icon-white clickable" onclick="ftcmd.set_class('{{fname}}',false,function() {document.location = target_url;});"></i></span>
 									{% else %}
-										<button class="btn btn-mini" type="button" onclick="ftcmd.set_class('{{fname}}',true,function() {document.location = target_url;});">Set as class</button>
+										<button class="btn btn-mini" type="button" onclick="ftcmd.set_class('{{fname}}',true,function() {document.location = target_url;});">Définir des classes</button>
 									{% endif %}
 								</td>
 								<td>{% if feature.num_undefined_value > 0 %}
@@ -91,7 +91,7 @@
 								<td>
 									{% ifnotequal fname ftable.target %}
 										{% if feature.target_allowed %}
-										<button class="btn btn-mini" type="button" onclick="ftcmd.set_target('{{fname}}',function () {document.location = target_url;});">Set target</button>
+										<button class="btn btn-mini" type="button" onclick="ftcmd.set_target('{{fname}}',function () {document.location = target_url;});">Cibler</button>
 										{% endif %}	
 									{% endifnotequal %}
 												
@@ -100,7 +100,7 @@
 						{% endfor %} 
 					
 					</table>
-					<h4 class="pull-right"># of rows : {{ ftable.get_row_count }}</h4>
+					<h4 class="pull-right">Nombre de lignes : {{ ftable.get_row_count }}</h4>
 				</div>				
 				{% for fname,feature in ftable.get_features %}
 				<div id="{{ fname|slugify }}-modal" class="modal hide fade large-modal" tabindex="-1" role="dialog" aria-labelledby="{{ fname|slugify }}Modal" aria-hidden="true">
@@ -108,19 +108,19 @@
 				    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 				    <h3  id="{{ fname|slugify }}-modal-label">Feature {{ fname }}</h3>
 				    {% ifequal fname ftable.target %}
-						<span class="label label-success">Target</span>
+						<span class="label label-success">Cible</span>
 					{% endifequal %}
 					{% if not feature.is_usable %} 
-						<span class="label label-reverse">Discarded</span>
+						<span class="label label-reverse">Ecartée</span>
 					{% endif %} 
 					{% if feature.is_virtual %} 
-						<span class="label label-info">Virtual</span>
+						<span class="label label-info">Virtuelle</span>
 					{% endif %} 
 					{% if feature.is_sparse %} 
-						<span class="label label-warning">Low density</span>
+						<span class="label label-warning">Incomplet</span>
 					{% endif %}
 					{% if feature.has_class %} 
-						<span class="label label-info">Has classes</span>
+						<span class="label label-info">Classes</span>
 					{% endif %} 
 				  </div>
 				  <div class="modal-body large-modal-body">
@@ -147,7 +147,7 @@
 								<thead>
 									<tr>		
 										<th></th>
-										<th>Property</th>
+										<th>Propriété</th>
 									</tr>
 								</thead>
 								<tr>
@@ -169,34 +169,34 @@
 									</td>
 								</tr>
 								<tr>							
-									<td>Common value</td><td>{{ feature.common_value|default_if_none:'' }}</td>
+									<td>Valeur la + fréquente</td><td>{{ feature.common_value|default_if_none:'' }}</td>
 								</tr>
 								<tr>
-									<td>Min. value</td>
+									<td>Min.</td>
 									<td>{{ feature.min_value|floatformat|default_if_none:'' }}</td>
 								</tr>
 								<tr>
-									<td>Max. value</td>			
+									<td>Max.</td>			
 									<td>{{ feature.max_value|floatformat|default_if_none:'' }}</td>
 								</tr>
 								<tr>
-									<td>Mean value</td>
+									<td>Moyenne</td>
 									<td>{{ feature.mean_value|floatformat }}</td>
 								</tr>
 								<tr>
-									<td>Std deviation</td>
+									<td>Ecart type</td>
 									<td>{{ feature.std_dev|floatformat|default_if_none:'' }}</td>
 								</tr>
 								<tr>
-									<td>Median value</td>
+									<td>Mediane</td>
 									<td>{{ feature.median_value|floatformat|default_if_none:'' }}</td>
 								</tr>
 								<tr>
-									<td>1st quarter percentile</td>
+									<td>1er quartile</td>
 									<td>{{ feature.first_quarter_percentile|floatformat|default_if_none:'' }}</td>
 								</tr>
 								<tr>
-									<td>3rd quarter percentile</td>	
+									<td>3eme quartile</td>	
 									<td>{{ feature.third_quarter_percentile|floatformat|default_if_none:'' }}</td>
 								</tr>
 							</table>
@@ -204,7 +204,7 @@
 							</div>
 						</div>								
 				<div class="modal-footer">
-			    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			    <button class="btn" data-dismiss="modal" aria-hidden="true">Annuler</button>
 			  </div>
 			</div>
 		</div>	

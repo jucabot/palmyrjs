@@ -13,8 +13,7 @@
 </style>
 {% endblock %}
 {% block content %}
-	<a name="top"></a>
-	<h1>Analysis of {{ name }} <small>Analyze and visualize data</small></h1>
+		<br/>
 	
 		<div id="message"></div>
 	
@@ -38,9 +37,9 @@
 					 	<div class="row-fluid">
 					 	<form class="form-inline" id="query-form">
 					 		<div class="input-append">
-							  <input id="query" type="text" class="input-xxlarge" placeholder="Enter your query here" value="{{ query }}" data-provide="typeahead">
-							  <button type="submit" class="btn btn-primary btn-long">Query</button>
-							  <button class="btn btn-long" href="#add-filter-modal" role="button" data-toggle="modal">Filter...</button>
+							  <input id="query" type="text" class="input-xxlarge" placeholder="Saisissez votre requête d'analyse ici..." value="{{ query }}" data-provide="typeahead">
+							  <button type="submit" class="btn btn-primary btn-long"><i class="icon-search icon-white"></i> Analyser</button>
+							  <button class="btn btn-long" href="#add-filter-modal" role="button" data-toggle="modal"><i class="icon-filter"></i> Filtrer...</button>
 							</div>
 						</form>
 						<div id="filter-info"></div>
@@ -53,19 +52,6 @@
 				<div class="span2">
 					<div class="well sidebar-nav" id="saved-query-list">
 						<ul  class="nav nav-list">
-						  <li class="nav-header">Actions</li>
-						  	<li><a href="#" onclick=""><i class="icon-edit"></i>Edit...</a></li>
-						  	<li><a href="#" onclick=""><i class="icon-star-empty"></i>Bookmark</a></li>
-						  	<li><a href="#" onclick=""><i class="icon-picture"></i>Export image</a></li>
-						  	<li><a href="#" onclick=""><i class="icon-download"></i>Export data</a></li>
-						  	<li><a href="#" onclick=""><i class="icon-share"></i>Share...</a></li>
-						  	<li><a href="#" onclick=""><i class="icon-tags"></i>Dash...</a></li>
-						  	
-
-						  <li class="nav-header">Bookmarks</li>
-						  {% for query in ftable.queries %}
-						  	<li><span><a href="#" onclick=""></a> <i class="icon-remove"></i></li>
-						  {% endfor %}
 						  
 						  <li class="nav-header" id="filter-list">Filters</li>
 						  {% for name in ftable.filters.keys %}
@@ -90,10 +76,17 @@
 <script>
 var name = '{{ name }}';
 var ftable_name = '{{ dpath }}';
+var static_prefix = '{{ STATIC_PREFIX }}';
+
+var search_app_url = '{% url 'search' %}';
 var api_url = '{% url 'api-analysis' %}';
 var target_url = '{% url 'summary-analysis' %}?dpath={{ dpath }}';
 
 var ftcmd = new FeatureTableCommand(api_url,ftable_name);
+
+var search_api_url = '{% url 'search-api' %}';
+var search_api = new SearchCommand(search_api_url);
+
 
 var result_index = 0;
 var queries = [];
@@ -109,7 +102,7 @@ $(function() {
 		source.push('{{ name1 }}');
 		{% for name2 in ftable.get_feature_names %}
 			{% if name1 != name2 %}
-				source.push('{{ name1 }}' + ' by ' + '{{ name2 }}');
+				source.push('{{ name1 }}' + ' par ' + '{{ name2 }}');
 			{% endif %}
 		{% endfor %} 
 	{% endfor %}
@@ -129,17 +122,28 @@ $('#query-form').submit(function() {
 function display_result(type,data,query) {
 
 	result_index += 1;
-
 	var result_hook = 'result_' + result_index;
 	
 	$('#result').prepend('<div id="' + result_hook + '"/>');
-	
 	draw_result(type,data,query,result_hook);
 	
 	$('#query-result-toolbar').removeClass('hidden');
 	
-	queries.push({ 'hook' : result_hook, 'query' : query, 'display_type' : type }); 
+	if (type == 'timeline' && data.series.length == 1) {
+		$('#' + result_hook).prepend('<a class="pull-right" href="#" title="Analyser cette variable" onclick="create_workspace(\'' + query + '\');return false;"><i class="icon-globe"></i></a>');
+	}
+	
+	 
 }
+
+function create_workspace(query) {
+	ftcmd.index_query(query, current_filter, function(id) {
+		search_api.open_workspace(id,query, function(){
+				window.location = search_app_url + '?tab=workspaces';
+		});
+	});
+}
+
 
 {% include "analysis/inc_add_filter_script.js" %}
 </script>

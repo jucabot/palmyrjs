@@ -21,11 +21,12 @@
 
        </ul>
        <ul class="nav pull-right">
-         <li><a href="/admin">Admin</a></li>
-         <li>
-         	<a href="#">Préferences</a>
-         </li>
-         <li><a href="{% url 'logout' %}">Déconnexion</a></li>
+         <li class="dropdown">
+                <a class="dropdown-toggle" id="menu-user" role="button" data-toggle="dropdown" href="#"><i class="icon-user icon-white"></i><b class="caret"></b></a>
+                <ul id="menu_dropdown-user" class="dropdown-menu" role="menu" aria-labelledby="menu-user">
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'logout' %}">Déconnexion</a></li>
+                </ul>
+          </li>
        </ul>
      </div><!--/.nav-collapse -->
 {% endblock %}

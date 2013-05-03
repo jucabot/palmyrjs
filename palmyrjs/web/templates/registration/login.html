@@ -18,8 +18,8 @@
 <div class="form-signin">
 	{% if form.errors %}
 	<div class="alert alert-error">
-	<h4>Error!</h4>
-	<p>Your username and password didn't match. Please try again.</p>
+	<h4>Erreur!</h4>
+	<p>Votre nom d'utilisateur et votre mot de passe ne correspondent pas</p>
 	</div>
 	{% endif %}
 
@@ -27,11 +27,11 @@
 
 	<form method="post" action="{% url 'django.contrib.auth.views.login' %}">
 	{% csrf_token %}
-	<h2 class="form-signin-heading">Please sign in</h2>
+	<h2 class="form-signin-heading">Se connecter</h2>
 	<input type="text" name="{{form.username.name}}" class="input-block-level" placeholder="{{ form.username.label }}">
     <input type="password" name="{{form.password.name}}" class="input-block-level" placeholder="{{ form.password.label }}">
     
-    <button class="btn btn-large btn-primary" type="submit">Login</button>
+    <button class="btn btn-large btn-primary" type="submit">Connecter</button>
     <input type="hidden" name="next" value="{{ next|default:'/' }}" />
        
 	</form>

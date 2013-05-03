@@ -150,7 +150,7 @@ dd {
 	{{~it.workspaces:workspace:i}}
   		<div class="span3" >
 	  		<p class="text-center">
-		  		<a href="#" onclick="open_workspace('{{=workspace.name}}');return false;"><img src="{{=it.STATIC_PREFIX }}/img/workspace-icons/{{=workspace.icon_path}}" /></a>
+		  		<a href="#" onclick="open_workspace('{{=workspace.value}}','{{=workspace.name}}');return false;"><img src="{{=it.STATIC_PREFIX }}/img/workspace-icons/{{=workspace.icon_path}}" /></a>
 		  		<br/><span>{{=workspace.name}} <a href="#" onclick="remove_workspace('{{=workspace.id}}'); return false;"><i class="icon-remove"></i></a></span>
 		  		</p>
   		</div>
@@ -167,7 +167,7 @@ dd {
 
 var api_url = '{% url 'search-api' %}';
 var static_prefix = '{{ STATIC_PREFIX }}';
-
+var tab = '{{tab}}';
 var search_api = new SearchCommand(api_url);
 
 var result_index = 0;
@@ -179,14 +179,21 @@ var workspace_list_template = doT.template($('#template-workspace-list').text())
 
 var slider = new Slider();
 
-$(function () {
+$(function () { 
 
 	slider.add_slide("#domains");
 	slider.add_slide("#workspaces");
 	
 	update_workspaces();
 	
-	slider.start();
+	if(tab == '') {	
+		slider.start();
+	}
+	else {
+		slider.show('#' + tab);
+	}
+
+	
 	
 	var options = {
 			title: "Astuce",
@@ -199,13 +206,19 @@ $(function () {
 
 });
 
-function search_serie(query) {
+function search_serie(query,name) {
 
 	if (query == undefined) {
 		query = $('#search-query').val();
 	}
-	else
-		$('#search-query').val(query);
+	else {
+		if (name == undefined) {
+			$('#search-query').val(query);
+		}
+		else {
+			$('#search-query').val(name);
+		}
+	}
 	
 	if (query != '') {
 		search_api.search(query, display_result);
@@ -242,12 +255,12 @@ function display_result(type,data,query) {
 		
 		$('#search-results-hook').prepend('<div id="' + result_hook + '"/>');
 		$('#' + result_hook).addClass('span6');
-		draw_result(type,data,query,result_hook);
+		draw_result(type,data,data.name,result_hook);
 		
 		queries.push(query);
-		//{ 'hook' : result_hook, 'query' : query, 'display_type' : type });
+
 		if (type == 'timeline' && data.series.length == 1) {
-			$('#' + result_hook).prepend('<a class="pull-right" href="#" title="Analyser cette variable" onclick="create_workspace(\'' + query + '\');return false;"><i class="icon-globe"></i></a>');
+			$('#' + result_hook).prepend('<a class="pull-right" href="#" title="Analyser cette variable" onclick="create_workspace(\'' + data.id + '\',\'' + query + '\');return false;"><i class="icon-globe"></i></a>');
 		}
 		
 	} 
@@ -261,14 +274,14 @@ function draw_serie_list(data,render_to,title) {
 
 	html += '<dl>';
 	$.each(data,function (i) {
-		html += '<dt><a id="serie_'+ i + '" href="#"><strong>' + data[i].name + '</strong></a>';
-		if (data[i].display == 'timeline') {
-			html += '<a class="pull-right" href="#" title="Analyser cette variable" onclick="open_workspace(\'' + data[i].name + '\');return false;"><i class="icon-globe"></i></a>';
+		html += '<dt><a id="serie_'+ i + '" href="#"><strong>' + data[i][1].name + '</strong></a>';
+		if (data[i][1].display == 'timeline') {
+			html += '<a class="pull-right" href="#" title="Analyser cette variable" onclick="open_workspace(\'' + data[i][0] + '\',\'' + data[i][1].name + '\');return false;"><i class="icon-globe"></i></a>';
 		}
 		
 		html += '</dt>';
-		html += '<dd>' + data[i].description + '</br>';
-		html += '<small><i>Source : ' + data[i].source + ' Zone : ' + data[i].zone + '</i></small></dd>';
+		html += '<dd>' + data[i][1].description + '</br>';
+		html += '<small><i>Source : ' + data[i][1].source + ' Zone : ' + data[i][1].zone + '</i></small></dd>';
 		
 		});
 		
@@ -286,32 +299,32 @@ function draw_serie_list(data,render_to,title) {
 	var result_hook = 'display_result';
 	$.each(data,function (i) {
 		$("#serie_" + i).on('click',function () {
-				var data_ctx = data[i].data;
-				data_ctx['description'] = data[i]['description']
-            	data_ctx['source'] = data[i]['source']
-            	data_ctx['zone'] = data[i]['zone']
-				draw_result(data[i].display,data_ctx,data[i].name,result_hook);
+				var data_ctx = data[i][1].data;
+				data_ctx['description'] = data[i][1]['description']
+            	data_ctx['source'] = data[i][1]['source']
+            	data_ctx['zone'] = data[i][1]['zone']
+				draw_result(data[i][1].display,data_ctx,data[i][1].name,result_hook);
 				$('#' + result_hook).addClass('span12');
 			});
 		});
 	
 }
 
-function open_workspace(serie_id) {
-	search_api.open_workspace(serie_id, function(name,data) { 
-			update_workspace(name,data);
-			search_serie(name);
+function open_workspace(id,name) {
+	search_api.open_workspace(id, name, function(id,name,data) { 
+			update_workspace(id,name,data);
+			search_serie(id,name);
 		});
 }
 
-function create_workspace(serie_id) {
-	search_api.open_workspace(serie_id, update_workspace);
+function create_workspace(serie_id,name) {
+	search_api.open_workspace(serie_id,name, update_workspace);
 }
 
-function update_workspace(name,data) {
-	current_workspace = {'name':name, 'data':data};
+function update_workspace(id,name,data) {
+	current_workspace = {'name':name, 'data':data, 'id':id};
 	$('#current-workspace').html('<a id="current-workspace-btn" class="text-center" href="#"><i class="icon-globe"></i> '  + name + '</a>');
-	$('#current-workspace-btn').on("click", function () {search_serie(name);return false;});
+	$('#current-workspace-btn').on("click", function () {search_serie(id,name);return false;});
 	
 }
 
@@ -327,8 +340,8 @@ function update_workspaces() {
 
 function correlate_serie() {
 
-	if (current_workspace != undefined && current_workspace != null ) {
-		search_api.correlate(current_workspace.name,current_workspace.data, function (data,took) {
+	if (current_workspace != null ) {
+		search_api.correlate(current_workspace.id,current_workspace.data, function (data,took) {
 			if (!slider.has_slide("#correlation-board")) {
 				slider.add_slide("#correlation-board");
 			}

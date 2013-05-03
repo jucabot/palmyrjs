@@ -3,25 +3,25 @@
 <div id="add-feature" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="AddFeatureModal" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="add-feature-label">Add feature...</h3>
+    <h3 id="add-feature-label">Ajouter une feature...</h3>
   </div>
   <div class="modal-body">
-	<input id="feature-name" type="text" placeholder="Enter the feature name...">
+	<input id="feature-name" type="text" placeholder="Entrer le nom de la feature...">
 	
 	<label class="radio">
 	  <input type="radio" name="feature-type" id="feature-type" value="float" checked>
-	  Numeric - integer or float type
+	  Numérique - Entier ou flottant
 	</label>
 	<label class="radio">
 	  <input type="radio" name="feature-type" id="feature-type" value="str">
-	  Text - String code or full text
+	  Texte - Chaîne de caractères ou texte
 	</label>
 
-  	<textarea id="feature-code" rows="12" class="span5" placeholder="Enter the feature code... function = lambda table,row_index : ... " ></textarea>
+  	<textarea id="feature-code" rows="12" class="span5" placeholder="Entrer le code de la feature... function = lambda table,row_index : ... " ></textarea>
   	<span class="help-block">function = lambda table,row_index : ...</span>
   </div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-    <button class="btn btn-primary" onclick="ftcmd.add_feature($('#feature-name').val(),$('#feature-type:checked').val(),$('#feature-code').val(), function() {$('#add-feature').modal('hide'); document.location.reload();});">Create feature</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Annuler</button>
+    <button class="btn btn-primary" onclick="ftcmd.add_feature($('#feature-name').val(),$('#feature-type:checked').val(),$('#feature-code').val(), function() {$('#add-feature').modal('hide'); document.location.reload();});">Créer la feature</button>
   </div>
 </div>	

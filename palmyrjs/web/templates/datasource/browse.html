@@ -5,8 +5,7 @@
 
 {% block content %}
 	
-	<h1>My data sources <small>Upload and create analysis from your dataset</small></h1>
-	
+	<br/>
 	{{ path|breadcrumb }}
 	
 	<div id="message"></div>
@@ -16,12 +15,7 @@
 			      	<div class="span7" ></div>
 					<div class="span5">
 						<div class="pull-right">
-						<button class="btn btn-primary" href="#upload-file" role="button" data-toggle="modal">Upload file</button>
-						<button class="btn" href="#create-folder" role="button" data-toggle="modal">Create folder...</button>
-						<div class="btn-group" data-toggle="buttons-checkbox">
-							  <button type="button" class="btn"><i class="icon-th-large" title="Display as icons"></i></button>
-							  <button type="button" class="btn"><i class="icon-th-list" title="Display as list"></i></button>
-						</div>
+							<button class="btn btn-primary" href="#upload-file" role="button" data-toggle="modal">Importer un fichier</button>
 							
 						</div>
 					</div>
@@ -30,27 +24,13 @@
 	
 	<div class="row-fluid" id="folders">
 	  	<div class="span12">
-	  		{% if path = "/" %}
-		 	<div class="span2" >
-		 		<p class="text-center">
-		 			<a href="{% url 'browse-datahub' %}"><img src="{{ STATIC_PREFIX }}/img/marketplace.png" /></a>
-	  				<br/>External Data
-	  			</p>
-	  		</div>
-	  		
-	  		<div class="span2" >
-	  		<p class="text-center"><a href="#examples"><img src="{{ STATIC_PREFIX }}/img/sharedfolder.png" /></a>
-	  		<br/>Shared folder</p>
-	  		</div>
-	  		
-			{% endif %}
 		 	
 		 	{% for dir in directories %}
 	  		<div class="span2" >
 	  			<p class="text-center">
 	  			<a href="?path={{ path }}/{{ dir }}"><img src="{{ STATIC_PREFIX }}/img/folder.png" /></a>
 	  			<br/>
-	  			<span>{{ dir }} <i class="icon-remove" title="remove"></i></span>
+	  			<span>{{ dir }}
 	  			</p>
 	  		</div>
 			{% endfor %}
@@ -58,7 +38,7 @@
 			{% for file in files %}
 		  		<div class="span2"><p class="text-center"><a href="{% url 'create-analysis' %}?dpath={{ path }}/{{ file }}"><img src="{{ STATIC_PREFIX }}/img/file.png" /></a>
 	  			<br/>
-	  			<span>{{ file }} <i class="icon-remove" title="remove"></i></span>
+	  			<span>{{ file }} <i class="icon-remove" title="Supprimer"></i></span>
 	  			</p>
 	  			</div>
 			{% endfor %}
@@ -69,10 +49,10 @@
 	<div  class="row-fluid">
 		<div id="upload_file" class="span12">
 		<hr>
-		<h2>Upload file</h2>
+		<h2>Importer un fichier</h2>
 				{% if upload_form.errors %}
 					<div class="alert alert-error">
-						<h4>Error!</h4>
+						<h4>Erreur!</h4>
 						<p>{{upload_form.errors}}</p>
 					</div>
 				{% endif %}
@@ -81,7 +61,7 @@
 				{% csrf_token %}
 				<input type="file" name="{{ upload_form.file.name }}" id="id_file" accept=".csv" runat="server" />
 				<input name="path" type="hidden" value="{{ path }}" />
-			    <button id="submit_file" class="btn btn-primary" type="submit" >Upload file</button>
+			    <button id="submit_file" class="btn btn-primary" type="submit" >Importer</button>
 				</form>
 				
 				</div>

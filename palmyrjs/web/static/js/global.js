@@ -255,15 +255,16 @@ function SearchCommand(api_url)
 		
 	}
 	
-	this.open_workspace = function (serie_id,done) {
+	this.open_workspace = function (id,name,done) {
 		var cmd = 'open-workspace';
 		this._call_api(
-			{ 'cmd':cmd, 'serie_id': serie_id},
+			{ 'cmd':cmd, 'id': id,'name':name},
 			function(response) {
-				done(response.name,response.data);
+				done(response.id,response.name,response.data);
 			});
 		
 	}
+	
 	
 	this.remove_workspace = function (id,done) {
 		var cmd = 'remove-workspace';
@@ -552,6 +553,17 @@ function FeatureTableCommand(api_url,ftable_name)
 		
 	}
 	
+	this.index_query = function (query, filter, done) {
+		var cmd = 'index-query';
+		
+		this._call_api(
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'query': query,'filter':filter },
+			function(response) {
+					done(response.id);
+			});
+		
+	}
+	
 	
 	
 	this.init();
@@ -597,13 +609,15 @@ function draw_result(type,data,query,result_hook) {
 	}
 	else if (type == 'timeline') {
 		
-		if (current_workspace != undefined && current_workspace != null) {
-			if (current_workspace.name != query) {
-				var current_workspace_data = current_workspace.data;
-				data.series.push(current_workspace_data.series[0]);
+		if (typeof current_workspace != "undefined") {
+			if (current_workspace != null) {
+		
+				if (current_workspace.name != query) {
+					var current_workspace_data = current_workspace.data;
+					data.series.push(current_workspace_data.series[0]);
+				}
 			}
 		}
-		
 		drawing = draw_timeline('',data,result_hook,query);
 	}
 	else {
@@ -818,7 +832,7 @@ function draw_percent_stacked_bar(name,data,render_to,title,yTitle,min,show_labe
 
 function draw_wordcloud(name,data,render_to,query) {
 
-	if (data.description != undefined)
+	if (typeof data.description != 'undefined')
 		$('#' + render_to).html('<p class="text-center lead">' + query + '</p>');
 	
 	var fill = d3.scale.category20b();
@@ -1311,12 +1325,12 @@ function draw_timeline(name,data,render_to,title) {
 	
 	options.series = series;
 	
-	if (data.description != undefined)
+	if (typeof data.description != 'undefined')
 		options.subtitle.text = data.description;
 	
 	chart = new Highcharts.Chart(options);
 	
-	if (data.description != undefined)
+	if (typeof data.description != 'undefined')
 		$('#'+render_to).append('<p class="pull-right"><i>source : ' + data.source + ' / zone : ' +  data.zone + '</i></p>');
 	
 
@@ -1351,7 +1365,7 @@ function Heatmap(options)
 		
 		for (var i=0; i<series_len; i++)
 		{
-			html += '<tr><td><a href=\"#\" onclick=\"search_serie(\'' +options.series[i].name+ '\');return false;">' + options.series[i].name +  '</a></td>' ;
+			html += '<tr><td><a href=\"#\" onclick=\"search_serie(\'' +options.series[i].id+ '\',\'' +options.series[i].name+ '\');return false;">' + options.series[i].name +  '</a></td>' ;
 			
 		
 			for (var j=0; j<cat_len; j++)
@@ -1402,7 +1416,8 @@ function draw_heatmap(name,data,render_to,title) {
 		
 		$.each(data, function(i,result) {
 			var serie = {
-					name : result.id,
+					id : result.id,
+					name : result.name,
 					data : result.results 
 			};						
 			options.series.push(serie);
