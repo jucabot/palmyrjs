@@ -255,12 +255,15 @@ function display_result(type,data,query) {
 		
 		$('#search-results-hook').prepend('<div id="' + result_hook + '"/>');
 		$('#' + result_hook).addClass('span6');
+		
+		
+		
 		draw_result(type,data,data.name,result_hook);
 		
 		queries.push(query);
 
 		if (type == 'timeline' && data.series.length == 1) {
-			$('#' + result_hook).prepend('<a class="pull-right" href="#" title="Analyser cette variable" onclick="create_workspace(\'' + data.id + '\',\'' + query + '\');return false;"><i class="icon-globe"></i></a>');
+			$('#btn-box-' + result_hook).prepend('<a href="#" title="Analyser cette variable" onclick="create_workspace(\'' + data.id + '\',\'' + data.name + '\');return false;"><i class="icon-globe"></i></a>');
 		}
 		
 	} 

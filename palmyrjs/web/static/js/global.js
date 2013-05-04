@@ -625,7 +625,8 @@ function draw_result(type,data,query,result_hook) {
 		return;
 	}
 	
-	$('#' + result_hook).prepend('<a class="pull-right" href="#" title="Retirer" onclick="remove_serie(\'' + query + '\',\'' +result_hook+'\');return false;"><i class="icon-remove"></i></a>');
+	
+	$('#' + result_hook).prepend('<div class="pull-right" id="btn-box-' + result_hook +  '"><a href="#" title="Exporter" onclick="$(\'#' +result_hook+'\').highcharts().exportChart();return false;"><i class="icon-picture"></i></a><a href="#" title="Retirer" onclick="remove_serie(\'' + query + '\',\'' +result_hook+'\');return false;"><i class="icon-remove"></i></a></div>');
 	return drawing;
 
 }
@@ -649,7 +650,11 @@ function draw_pie(name,data,render_to,title) {
 			text: title,
 			x: -20 //center
 		},
-		
+		navigation: {
+            buttonOptions: {
+                enabled: false
+            }
+		},
 	    plotOptions: {
 	                pie: {
 	                    
@@ -705,6 +710,11 @@ function draw_bar(name,data,render_to,title,yTitle,min,show_label) {
 		},
 		credits: {
 			enabled: false
+		},
+		navigation: {
+            buttonOptions: {
+                enabled: false
+            }
 		},
 		title: {
 			text: title,
@@ -775,6 +785,11 @@ function draw_percent_stacked_bar(name,data,render_to,title,yTitle,min,show_labe
 		credits: {
 			enabled: false
 		},
+		navigation: {
+	            buttonOptions: {
+	                enabled: false
+	            }
+	    },
 		title: {
 			text: title,
 			x: -20 //center
@@ -1119,6 +1134,11 @@ function draw_scatter(name,data,render_to,title,xTitle,yTitle,show_label) {
 		credits: {
 			enabled: false
 		},
+		navigation: {
+            buttonOptions: {
+                enabled: false
+            }
+		},
 		title: {
 			text: title,
 			x: -20 //center
@@ -1197,7 +1217,11 @@ function draw_box_plot(name,data,render_to,title)
 		    credits: {
 		        enabled: false
 		    },
-		    
+		    navigation: {
+	            buttonOptions: {
+	                enabled: false
+	            }
+		    },
 		    legend: {
 		        enabled: false
 		    },
@@ -1267,6 +1291,11 @@ function draw_timeline(name,data,render_to,title) {
 		},
 		credits: {
 			enabled: false
+		},
+		navigation: {
+            buttonOptions: {
+                enabled: false
+            }
 		},
 		title: {
 			text: title,
