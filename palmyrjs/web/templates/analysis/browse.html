@@ -7,7 +7,18 @@
 {% block content %}
 	
 	<br/>
-	{{ path|breadcrumb }}
+	<div class="row-fluid">
+		<div class="span3">
+			<ul class="nav nav-pills">
+			  <li class="active"><a href="{% url 'browse-analysis' %}">Mes analyses</a></li>
+			  <li><a href="{% url 'browse-datasource' %}">Mes fichiers</a></li>
+			</ul>
+		</div>
+		<div class="span9">
+			{{ path|breadcrumb }}
+		</div>
+	</div>
+	
 	<div id="message"></div>
 		
 	

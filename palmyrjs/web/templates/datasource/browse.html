@@ -4,24 +4,25 @@
 {% load breadcrumbs %}
 
 {% block content %}
-	
 	<br/>
-	{{ path|breadcrumb }}
 	
+	<div class="row-fluid">
+		<div class="span3">
+			<ul class="nav nav-pills">
+			  <li><a href="{% url 'browse-analysis' %}">Mes analyses</a></li>
+			  <li class="active"><a href="{% url 'browse-datasource' %}">Mes fichiers</a></li>
+			</ul>
+		</div>
+		<div class="span7">
+			{{ path|breadcrumb }}
+		</div>
+		<div class="span2">
+			<button class="btn btn-primary" href="#upload-file" role="button" data-toggle="modal"><i class="icon-upload icon-white"></i> Importer</button>					
+		</div>
+	</div>
 	<div id="message"></div>
 	
-		  <div class="row-fluid">
-			    <div class="span12">
-			      	<div class="span7" ></div>
-					<div class="span5">
-						<div class="pull-right">
-							<button class="btn btn-primary" href="#upload-file" role="button" data-toggle="modal">Importer un fichier</button>
-							
-						</div>
-					</div>
-				</div>
-			</div>	
-	
+		
 	<div class="row-fluid" id="folders">
 	  	<div class="span12">
 		 	
