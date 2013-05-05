@@ -14,8 +14,8 @@
      
      <div class="nav-collapse collapse">
        <ul class="nav pull-left">
-        <li {% ifequal active_menu "search" %} class="active" {% endifequal %}><a href="{% url 'search' %}">Explorer</a></li>
-		<li {% ifequal active_menu "analysis" %} class="active" {% endifequal %}><a href="{% url 'browse-analysis' %}">Mes données</a></li>
+        <li class="{% ifequal active_menu "search" %} active {% endifequal %}"><a href="{% url 'search' %}"><i class="no-margin icon-globe {% ifequal active_menu "search" %} icon-white {% else %} icon-lightgrey {% endifequal %}"></i> Explorer</a></li>
+		<li class="{% ifequal active_menu "analysis" %} active {% endifequal %}"><a href="{% url 'browse-analysis' %}"><i class="no-margin icon-signal {% ifequal active_menu "analysis" %} icon-white {% else %} icon-lightgrey {% endifequal %}"></i> Mes données</a></li>
 		
 
        </ul>

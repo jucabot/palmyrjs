@@ -20,6 +20,11 @@ footer p {
 	margin-top: 10px;
 }
 
+.no-margin {
+	margin:0px;
+	margin-top:-1px;
+	
+}
 .brand-logo {
 	padding-left:20px;
 	padding-right:20px;
