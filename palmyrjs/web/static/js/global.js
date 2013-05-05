@@ -158,6 +158,7 @@ function Slider()
 
 
 
+/*
 function GeneralCommand(api_url,ftable_name)
 {
 	this.url = api_url;
@@ -207,7 +208,7 @@ function GeneralCommand(api_url,ftable_name)
 
 	this.init();
 }
-
+*/
 function SearchCommand(api_url)
 {
 	this.url = api_url;
@@ -235,12 +236,12 @@ function SearchCommand(api_url)
 
 	}
 	
-	this.search = function (query,done) {
+	this.search = function (query,from, done) {
 		var cmd = 'search';
 		this._call_api(
-			{ 'cmd':cmd, 'query': query},
+			{ 'cmd':cmd, 'query': query, 'from':from},
 			function(response) {
-				done(response.type,response.data,response.query);
+				done(response.type,response.data,response.query,{total:response.total,took:response.took,from:response.es_from});
 			});
 		
 	}

@@ -206,7 +206,7 @@ $(function () {
 
 });
 
-function search_serie(query,name) {
+function search_serie(query,name,from) {
 
 	if (query == undefined) {
 		query = $('#search-query').val();
@@ -221,13 +221,13 @@ function search_serie(query,name) {
 	}
 	
 	if (query != '') {
-		search_api.search(query, display_result);
+		search_api.search(query, from, display_result);
 	}
 	
 }
 
 
-function display_result(type,data,query) {
+function display_result(type,data,query,options) {
 
 	if (queries.indexOf(query) >= 0) {
 		slider.show('#search-board');
@@ -239,7 +239,7 @@ function display_result(type,data,query) {
 				slider.add_slide("#search-list");
 		}
 		
-		draw_serie_list(data,'#search-list-hook',query);
+		draw_serie_list(data,'#search-list-hook',query,options.total,options.took,options.from);
 		slider.show("#search-list");
 	}
 	else
@@ -269,11 +269,12 @@ function display_result(type,data,query) {
 	} 
 }
 
-function draw_serie_list(data,render_to,title) {
+function draw_serie_list(data,render_to,query,total,took,from) {
 
 	var html = '';
 
-	html += '<div class="span4"><p class="text-left lead">Résultats de recherche</p>';
+	html += '<div class="span4"><p class="text-left"><text class="lead">Résultats de recherche</text><br/>';
+	html += '<small>' + total + ' résultats (' + took/1000 +' secondes)</small></p>';
 
 	html += '<dl>';
 	$.each(data,function (i) {
@@ -288,8 +289,27 @@ function draw_serie_list(data,render_to,title) {
 		
 		});
 		
-    html += '</dl></div>';
+    html += '</dl>';
+    
+    
+    html += '<div class="pagination pagination-mini"><ul>';
+    for (i=0;i < Math.min(total/data.length,14); i++) {
+    	if ((from/data.length)*1 == i) {
+    		html += '<li class="active"><a href="#" onclick="search_serie(\'' + query +'\',\'' + query + '\',' + (i*10) +');">' + (i*1+1) +'</a></li>';
+    	}
+    	else {
+	    	html += '<li><a href="#" onclick="search_serie(\'' + query +'\',\'' + query + '\',' + (i*10) +');">' + (i*1+1) +'</a></li>';
+	    }
+	}
+	if (total/data.length > 14) {
+		html += '<li><a href="#">...</a></li>';
+  	}
+  	html += '</ul></div>';
+    
+    
+    html += '<br/><br/></div>';
 
+	
    
    	html += '<div id="display_result" class="span8">';
     if (data.length == 0) {
