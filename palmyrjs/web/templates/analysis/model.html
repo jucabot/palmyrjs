@@ -152,6 +152,7 @@
 {% endraw %}
 
 
+{% include "analysis/inc_add_filter_script.html" %}
 
 </div>
 
@@ -283,7 +284,7 @@ $('#apply-model-modal').on('show', function () {
 	$('#output-filename').val(ftable_name.replace(name,'predictions.csv'));
 });
 
-{% include "analysis/inc_add_filter_script.js" %}
+
 
 ftcmd.get_current_model_info(update_score);
 

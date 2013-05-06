@@ -318,10 +318,10 @@ function FeatureTableCommand(api_url,ftable_name)
 
 	}
 
-	this.get_featureset = function (fname,done) {
+	this.get_featureset = function (done) {
 		var cmd = 'get-featureset';
 		this._call_api(
-			{ 'ftable' : this.ftable_name, 'feature_name': fname, 'cmd' : cmd },
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd },
 			function(response) {
 					done(response.data);
 			});
@@ -537,6 +537,17 @@ function FeatureTableCommand(api_url,ftable_name)
 		
 		this._call_api(
 			{ 'ftable' : this.ftable_name, 'cmd' : cmd },
+			function(response) {
+					done();
+			});
+		
+	}
+	
+	this.remove_filter = function (name,done) {
+		var cmd = 'remove-filter';
+		
+		this._call_api(
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'name':name },
 			function(response) {
 					done();
 			});

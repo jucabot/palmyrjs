@@ -32,35 +32,30 @@
 			<div class="row-fluid">
 				
 				
-				<div class="span10">
+				<div class="span12">
 					 	
 					 	<div class="row-fluid">
-					 	<form class="form-inline" id="query-form">
+					 	<form class="form-inline span12" id="query-form">
 					 		<div class="input-append">
 							  <input id="query" type="text" class="input-xxlarge" placeholder="Saisissez votre requête d'analyse ici..." value="{{ query }}" data-provide="typeahead">
 							  <button type="submit" class="btn btn-primary btn-long"><i class="icon-search icon-white"></i> Analyser</button>
-							  <button class="btn btn-long" href="#add-filter-modal" role="button" data-toggle="modal"><i class="icon-filter"></i> Filtrer...</button>
-							</div>
+							</div>  
+							  <div class="btn-group">
+				                <button class="btn" title="Filtrer"><i class="icon-filter"></i></button>
+				                <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+				                <ul class="dropdown-menu" id="filter-list" >
+				                 
+				                </ul>
+				              </div>
+											  
 						</form>
-						<div id="filter-info"></div>
-	</div>
 						
+						</div>
+						<div id="filter-info"></div>
 						<div id="result" class="span12"></div>
 						
 						
-					</div>
-				<div class="span2">
-					<div class="well sidebar-nav" id="saved-query-list">
-						<ul  class="nav nav-list">
-						  
-						  <li class="nav-header" id="filter-list">Filters</li>
-						  {% for name in ftable.filters.keys %}
-						  	<li class="filter-item"><span><a href="#" onclick="select_filter('{{ name }}'); return false;">{{ name }}</a> <i class="icon-remove"></i></li>
-						  {% endfor %}
-						  
-						</ul>
-					</div>
-				</div>	
+				</div>
 			</div>
 				
 							
@@ -69,7 +64,7 @@
 {% include "analysis/inc_add_filter_popup.html" %}
 {% include "analysis/inc_search_correlation_popup.html" %}
 
-	   
+
 {% endblock %}
 
 {% block script %}
@@ -87,6 +82,7 @@ var ftcmd = new FeatureTableCommand(api_url,ftable_name);
 var search_api_url = '{% url 'search-api' %}';
 var search_api = new SearchCommand(search_api_url);
 
+var featureset = null;
 
 var result_index = 0;
 var queries = [];
@@ -97,6 +93,12 @@ var current_filter_name;
 $(function() {
 	var source = [];
 	source.push('show all');
+	
+	ftcmd.get_featureset(function(data) { 
+		featureset = data; 
+		load_filters();
+	}); 
+	
 	
 	{% for name1 in ftable.get_feature_names %}
 		source.push('{{ name1 }}');
@@ -143,10 +145,9 @@ function create_workspace(query) {
 		});
 	});
 }
-
-
-{% include "analysis/inc_add_filter_script.js" %}
 </script>
+
+{% include "analysis/inc_add_filter_script.html" %}
 
 
 {% endblock %}

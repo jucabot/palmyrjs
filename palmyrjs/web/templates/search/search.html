@@ -291,7 +291,6 @@ function draw_serie_list(data,render_to,query,total,took,from) {
 		
     html += '</dl>';
     
-    
     html += '<div class="pagination pagination-mini"><ul>';
     for (i=0;i < Math.min(total/data.length,14); i++) {
     	if ((from/data.length)*1 == i) {

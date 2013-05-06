@@ -1,0 +1,65 @@
+
+{% load raw %}
+{% raw %}
+
+<script id="template-filter-list" type="text/dot.js">
+	<li><a href="#add-filter-modal" role="button" data-toggle="modal">Nouveau filtre...</a></li>
+	<li class="divider" ></li>
+	{{~convert_dict_to_tuples(it.filters):filter:i}}
+		<li><ul class="inline"><li><a href="#" onclick="select_filter('{{=filter[0]}}'); return false;">{{=filter[0]}}</a></li><li class="pull-right"><a href="#" onclick="remove_filter('{{=filter[0]}}'); return false;"><i class="icon-remove"></i></a></li></ul></li>
+	{{~}}				
+	</div>
+</script>
+{% endraw %}
+
+
+<script>
+
+var filter_list_template = doT.template($('#template-filter-list').text());
+
+function load_filters() {
+	$('#filter-list').html(filter_list_template(featureset));
+}
+
+
+function add_filter(name,code) {
+	$('#add-filter-modal').modal('hide');
+	
+	ftcmd.get_featureset(function(data) { 
+		featureset = data;
+		load_filters(); 
+	});
+	
+	$('#filter-info').html('<div class="alert alert-info"><strong>Filtre : ' + name + '</strong><br/><pre>' + code + '</pre><button class="pull-right btn btn-mini btn-info" onclick="clear_filter();">Annuler le filtre</button></div>');
+	current_filter = code;
+	current_filter_name = name;
+}
+
+function select_filter(name,code) {
+
+	ftcmd.select_filter(name, function (name,code) {
+			$('#filter-info').html('<div class="alert alert-info"><strong>Filtre : ' + name + '</strong><button class="pull-right btn btn-mini btn-info" onclick="clear_filter();">Annuler le filtre</button><br/><br/><pre>' + code + '</pre></div>');
+			current_filter = code;
+			current_filter_name = name;
+		 });
+}
+
+function clear_filter() {
+
+	ftcmd.clear_filter(function () {
+			$('#filter-info').html('');
+			current_filter = undefined;
+			current_filter_name = undefined;
+		 });
+}
+
+function remove_filter(name) {
+	ftcmd.remove_filter(name, function() {
+		ftcmd.get_featureset(function(data) { 
+			featureset = data;
+			load_filters(); 
+		});
+	});
+}
+
+</script>
