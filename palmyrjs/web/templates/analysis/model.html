@@ -101,7 +101,7 @@
 							
 						 <li class="nav-header" id="filter-list">Filters</li>
 						  {% for name in ftable.filters.keys %}
-						  	<li class="filter-item"><span><a href="#" onclick="select_filter('{{ name }}'); return false;">{{ name }}</a> <i class="icon-remove"></i></li>
+						  	<li class="filter-item"><span><a href="#" onclick="select_filter('{{ name }}'); return false;">{{ name }}</a></li>
 						  {% endfor %}
 						  
 						  <li class="nav-header">Saved models</li>
@@ -168,6 +168,7 @@ var target_url = '{% url 'summary-analysis' %}?dpath={{ dpath }}';
 
 var ftcmd = new FeatureTableCommand(api_url,ftable_name);
 
+var featureset = null;
 var current_target = null;
 var current_model_name = null;
 
