@@ -132,7 +132,7 @@ function display_result(type,data,query) {
 	$('#query-result-toolbar').removeClass('hidden');
 	
 	if (type == 'timeline' && data.series.length == 1) {
-		$('#' + result_hook).prepend('<a class="pull-right" href="#" title="Analyser cette variable" onclick="create_workspace(\'' + query + '\');return false;"><i class="icon-globe"></i></a>');
+			$('#btn-box-' + result_hook).prepend('<a href="#" title="Analyser cette variable" onclick="create_workspace(\'' + data.id + '\',\'' + data.name + '\');return false;"><i class="icon-globe"></i></a>');
 	}
 	
 	 
