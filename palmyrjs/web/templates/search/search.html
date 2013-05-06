@@ -148,7 +148,7 @@ dd {
 <script id="template-workspace-list" type="text/dot.js">
  	<div class="row-fluid">
 	{{~it.workspaces:workspace:i}}
-  		<div class="span3" >
+  		<div class="span3" style="margin:0%" >
 	  		<p class="text-center">
 		  		<a href="#" onclick="open_workspace('{{=workspace.value}}','{{=workspace.name}}');return false;"><img src="{{=it.STATIC_PREFIX }}/img/workspace-icons/{{=workspace.icon_path}}" /></a>
 		  		<br/><span>{{=workspace.name}} <a href="#" onclick="remove_workspace('{{=workspace.id}}'); return false;"><i class="icon-remove"></i></a></span>
