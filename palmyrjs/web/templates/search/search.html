@@ -282,6 +282,7 @@ function draw_serie_list(data,render_to,query,total,took,from) {
 		if (data[i][1].display == 'timeline') {
 			html += '<a class="pull-right" href="#" title="Analyser cette variable" onclick="open_workspace(\'' + data[i][0] + '\',\'' + data[i][1].name + '\');return false;"><i class="icon-globe"></i></a>';
 		}
+		html += '<a class="pull-right" href="#" title="Afficher cette variable" onclick="search_serie(\'' + data[i][0] + '\',\'' + data[i][1].name + '\');return false;"><i class="icon-search"></i></a>';
 		
 		html += '</dt>';
 		html += '<dd>' + data[i][1].description + '</br>';
