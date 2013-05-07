@@ -99,7 +99,7 @@ $(function() {
 		load_filters();
 	}); 
 	
-	
+	//a passer en templatejs
 	{% for name1 in ftable.get_feature_names %}
 		source.push('{{ name1 }}');
 		{% for name2 in ftable.get_feature_names %}

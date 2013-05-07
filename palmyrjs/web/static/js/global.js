@@ -608,24 +608,24 @@ function draw_result(type,data,query,result_hook) {
 	$('#' + result_hook)[0].style.marginLeft = 0;
 	
 	if (type == 'table') {
-		drawing = draw_table('',data,result_hook,'All features');
+		drawing = draw_table('',data,result_hook,'');
 	}
 	else if (type == 'box-plot') {
 		//return draw_bar('',data,'result',query,'frequency %');
 		drawing = draw_box_plot('',data,result_hook);
 	}
 	else if (type == 'stacked-bar') {
-		drawing = draw_percent_stacked_bar('',data,result_hook,query,'frequency %');
+		drawing = draw_percent_stacked_bar('',data,result_hook,query,'');
 		//draw_mosaic_box('',data,result_hook,query,data.label_x,data.label_y);
 	}
 	else if (type == 'scatter') {
-		drawing = draw_scatter('',data,result_hook,query,'frequency %');
+		drawing = draw_scatter('',data,result_hook,query,'');
 	}
 	else if (type == 'pie') {
 		drawing = draw_pie('',data,result_hook,query);
 	}
 	else if (type == 'bar') {
-		drawing = draw_bar('',data,result_hook,query,'frequency %');
+		drawing = draw_bar('',data,result_hook,query,'');
 	}
 	else if (type == 'wordcloud') {
 		drawing = draw_wordcloud('',data,result_hook,query);
@@ -644,7 +644,7 @@ function draw_result(type,data,query,result_hook) {
 		drawing = draw_timeline('',data,result_hook,query);
 	}
 	else {
-		$('#result').html('Oops! There is no data vizualisation for this query');
+		$('#result').html('Oops! Il n\'y a pas de visualisation pour cette requête');
 		return;
 	}
 	
