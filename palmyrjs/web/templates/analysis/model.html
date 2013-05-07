@@ -163,7 +163,7 @@
 <script>
 var name = '{{ name }}';
 var ftable_name = '{{ dpath }}';
-var api_url = '{% url 'api-analysis' %}';
+var api_url = '{% url 'analysis-api' %}';
 var target_url = '{% url 'summary-analysis' %}?dpath={{ dpath }}';
 
 var ftcmd = new FeatureTableCommand(api_url,ftable_name);

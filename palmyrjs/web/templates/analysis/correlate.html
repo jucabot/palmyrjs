@@ -41,7 +41,7 @@
 							  <button type="submit" class="btn btn-primary btn-long"><i class="icon-search icon-white"></i> Analyser</button>
 							</div>  
 							  <div class="btn-group">
-				                <button class="btn" title="Filtrer"><i class="icon-filter"></i></button>
+				                <button class="btn" title="Filtrer" onclick="$('#add-filter-modal').modal();return false;"><i class="icon-filter"></i></button>
 				                <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
 				                <ul class="dropdown-menu" id="filter-list" >
 				                 
@@ -74,7 +74,7 @@ var ftable_name = '{{ dpath }}';
 var static_prefix = '{{ STATIC_PREFIX }}';
 
 var search_app_url = '{% url 'search' %}';
-var api_url = '{% url 'api-analysis' %}';
+var api_url = '{% url 'analysis-api' %}';
 var target_url = '{% url 'summary-analysis' %}?dpath={{ dpath }}';
 
 var ftcmd = new FeatureTableCommand(api_url,ftable_name);
