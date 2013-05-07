@@ -91,27 +91,35 @@ var current_filter;
 var current_filter_name;
 
 $(function() {
-	var source = [];
-	source.push('show all');
 	
 	ftcmd.get_featureset(function(data) { 
 		featureset = data; 
+		
+		load_query_source();
+		
 		load_filters();
+		
 	}); 
+		
 	
-	//a passer en templatejs
-	{% for name1 in ftable.get_feature_names %}
-		source.push('{{ name1 }}');
-		{% for name2 in ftable.get_feature_names %}
-			{% if name1 != name2 %}
-				source.push('{{ name1 }}' + ' par ' + '{{ name2 }}');
-			{% endif %}
-		{% endfor %} 
-	{% endfor %}
-	var options = {'source': source};
-	$('#query').typeahead(options);
 });
 
+function load_query_source() {
+	var source = [];
+	source.push('Afficher tout');
+	$.each(featureset.features, function(i,feature) {
+		source.push(feature.name);
+		$.each(featureset.features, function(i,feature2) {
+			if (feature.name != feature2.name) {
+				source.push(feature.name + ' par ' + feature2.name);
+			}
+		});
+	});
+	
+	var options = {'source': source};
+	$('#query').typeahead(options);
+	
+}
 
 $('#query-form').submit(function() {
 	
