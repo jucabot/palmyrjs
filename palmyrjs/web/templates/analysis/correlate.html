@@ -132,9 +132,10 @@ function display_result(type,data,query) {
 	$('#query-result-toolbar').removeClass('hidden');
 	
 	if (type == 'timeline' && data.series.length == 1) {
-			$('#btn-box-' + result_hook).prepend('<a href="#" title="Analyser cette variable" onclick="create_workspace(\'' + data.id + '\',\'' + data.name + '\');return false;"><i class="icon-globe"></i></a>');
+			$('#btn-box-' + result_hook).prepend('<a href="#" title="Analyser cette variable" onclick="create_workspace(\'' + query + '\');return false;"><i class="icon-globe"></i></a>');
 	}
 	
+	$('#btn-box-' + result_hook).prepend('<a href="#" title="Bookmarker cette variable" onclick="bookmark(\'' + query + '\');return false;"><i class="icon-bookmark"></i></a>');
 	 
 }
 
@@ -144,6 +145,13 @@ function create_workspace(query) {
 				window.location = search_app_url + '?tab=workspaces';
 		});
 	});
+}
+
+function bookmark(query) {
+		ftcmd.index_query(query, current_filter, function(id) {
+			set_message('success','La variable a été bookmarkée avec succès. Elle est à présent disponible dans la recherche');
+		});
+
 }
 </script>
 
