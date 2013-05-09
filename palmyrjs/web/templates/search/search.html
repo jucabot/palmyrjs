@@ -192,6 +192,7 @@ var slider = new Slider();
 
 $(function () { 
 
+
 	slider.add_slide("#domains");
 	slider.add_slide("#workspaces");
 	
@@ -382,7 +383,7 @@ function update_workspaces() {
 function correlate_serie() {
 
 	if (current_workspace != null ) {
-		search_api.correlate(current_workspace.id,current_workspace.data, function (data,took) {
+		search_api.correlate(current_workspace.serie_id,current_workspace.data, function (data,took) {
 			if (!slider.has_slide("#correlation-board")) {
 				slider.add_slide("#correlation-board");
 			}

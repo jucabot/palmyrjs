@@ -179,57 +179,6 @@ function Slider()
 
 
 
-/*
-function GeneralCommand(api_url,ftable_name)
-{
-	this.url = api_url;
-	
-	this.init = function() {
-
-	}
-	
-	this._call_api = function (data, done) {
-		$("body").css("cursor", "progress");
-		return $.getJSON(
-			this.url,
-			data,
-			function(data) {
-				if (data.status == 'success' && done != null) {
-					done(data);
-					$('#message').html('');
-				}
-				
-				if (typeof data.message != "undefined" && data.message != '') {
-					$('#message').html('<div class="alert alert-' + data.status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + capFirstLetter(data.status) + '!</strong><br/>' + data.message + '</div>');
-				}
-				$("body").css("cursor", "auto");
-			});
-
-	}
-
-	this.get_content = function (base,key,done) {
-		var cmd = 'get-content';
-		this._call_api(
-			{ 'cmd':cmd, 'base': base, 'key' : key },
-			function(response) {
-					done(response.data);
-			});
-	}
-	
-	this.create_analysis = function (data_id,base,done) {
-		var cmd = 'create-analysis';
-		this._call_api(
-			{ 'cmd':cmd, 'base': base, 'data_id': data_id},
-			function(response) {
-					done(response.name);
-			});
-		
-	}
-	
-
-	this.init();
-}
-*/
 
 function set_message(status,message) {
 	('#message').html('<div class="alert alert-' + status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + capFirstLetter(status) + '!</strong><br/>' + message + '</div>');
@@ -666,7 +615,7 @@ function draw_result(id,type,data,query,result_hook) {
 		if (typeof current_workspace != "undefined") {
 			if (current_workspace != null) {
 		
-				if (current_workspace.name != query) {
+				if (current_workspace.serie_id != id) {
 					var current_workspace_data = current_workspace.data;
 					data.series.push(current_workspace_data.series[0]);
 				}
@@ -689,8 +638,6 @@ function draw_pie(name,data,render_to,title) {
 	var chart;
 		
 	var options;
-	
-	
 	
 	options = {
 		chart: {
