@@ -135,7 +135,7 @@ function display_result(type,data,query) {
 	var result_hook = 'result_' + result_index;
 	
 	$('#result').prepend('<div id="' + result_hook + '"/>');
-	draw_result(type,data,query,result_hook);
+	draw_result(query,type,data,query,result_hook);
 	
 	$('#query-result-toolbar').removeClass('hidden');
 	

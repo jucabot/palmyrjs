@@ -3,6 +3,27 @@ function capFirstLetter(string)
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function limit_size(text,limit) {
+	
+	if (text.length > limit) {
+		text = text.substring(0,limit-3) + '...';
+	}
+	return text;
+	
+}
+function translate_status(status) {
+	var text = status;
+	if (status == 'success') {
+		text = "Succ&egrave;s";
+	}
+	else if (status == 'error') {
+		text = "Erreur";
+	}
+
+	
+	return capFirstLetter(text);
+}
+
 function roundNumber(num, dec) {
 	var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
 	return result;
@@ -240,7 +261,7 @@ function SearchCommand(api_url)
 				}
 				
 				if (typeof data.message != "undefined" && data.message != '') {
-					$('#message').html('<div class="alert alert-' + data.status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + capFirstLetter(data.status) + '!</strong><br/>' + data.message + '</div>');
+					$('#message').html('<div class="alert alert-' + data.status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + translate_status(data.status) + '!</strong><br/>' + data.message + '</div>');
 				}
 				$("body").css("cursor", "auto");
 			});
@@ -267,12 +288,12 @@ function SearchCommand(api_url)
 		
 	}
 	
-	this.open_workspace = function (id,name,done) {
+	this.open_workspace = function (serie_id,name,done) {
 		var cmd = 'open-workspace';
 		this._call_api(
-			{ 'cmd':cmd, 'id': id,'name':name},
+			{ 'cmd':cmd, 'serie_id': serie_id,'name':name},
 			function(response) {
-				done(response.id,response.name,response.data,response.options);
+				done(response.id,response.serie_id,response.name,response.data,response.options);
 			});
 		
 	}
@@ -282,6 +303,16 @@ function SearchCommand(api_url)
 		var cmd = 'remove-workspace';
 		this._call_api(
 			{ 'cmd':cmd, 'id': id},
+			function(response) {
+				done();
+			});
+		
+	}
+	
+	this.save_workspace = function (id,workspace,done) {
+		var cmd = 'save-workspace';
+		this._call_api(
+			{ 'cmd':cmd, 'id': id, 'options': JSON.stringify(workspace.options)},
 			function(response) {
 				done();
 			});
@@ -322,7 +353,7 @@ function FeatureTableCommand(api_url,ftable_name)
 					$('#message').html('');
 				}
 				if (typeof data.message != "undefined" && data.message != '') {
-					$('#message').html('<div class="alert alert-' + data.status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + capFirstLetter(data.status) + '!</strong><br/>' + data.message + '</div>');
+					$('#message').html('<div class="alert alert-' + data.status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + translate_status(data.status) + '!</strong><br/>' + data.message + '</div>');
 				}
 				$("body").css("cursor", "auto");
 			});
@@ -594,14 +625,14 @@ function FeatureTableCommand(api_url,ftable_name)
 }
 
 
-function remove_serie(query, result_hook) {
+function remove_serie(id, result_hook) {
 	
-	queries.splice(queries.indexOf(query),1);
-	$("#" + result_hook).html('');
+	queries.splice(queries.indexOf(id),1);
+	$("#" + result_hook).remove();
 	
 }
 
-function draw_result(type,data,query,result_hook) {
+function draw_result(id,type,data,query,result_hook) {
 	
 	var drawing = null;
 	
@@ -649,7 +680,7 @@ function draw_result(type,data,query,result_hook) {
 	}
 	
 	
-	$('#' + result_hook).prepend('<div class="pull-right" id="btn-box-' + result_hook +  '"><a href="#" title="Exporter" onclick="$(\'#' +result_hook+'\').highcharts().exportChart();return false;"><i class="icon-picture"></i></a><a href="#" title="Retirer" onclick="remove_serie(\'' + query + '\',\'' +result_hook+'\');return false;"><i class="icon-remove"></i></a></div>');
+	$('#' + result_hook).prepend('<div class="pull-right" id="btn-box-' + result_hook +  '"><a href="#" title="Exporter" onclick="$(\'#' +result_hook+'\').highcharts().exportChart();return false;"><i class="icon-picture"></i></a><a href="#" title="Retirer" onclick="remove_serie(\'' + id + '\',\'' +result_hook+'\');return false;"><i class="icon-remove"></i></a></div>');
 	return drawing;
 
 }

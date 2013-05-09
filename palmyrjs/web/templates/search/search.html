@@ -83,14 +83,24 @@ dd {
 </div>
 
 <div  class="row-container hide" id="search-board">
-	<div class="row">
-	  	<p class="text-center lead"></p>
+		<div class="pull-right btn-group">
+  		<a class="btn dropdown-toggle" id="menu-search-actions" role="button" data-toggle="dropdown" href="#"><i class="icon-cog"></i><b class="caret"></b></a>
+               <ul id="menu-dropdown-search-actions" class="dropdown-menu" role="menu" aria-labelledby="menu-search-actions">
+                 <li role="presentation"><a role="menuitem" tabindex="-1" href="#" onclick="save_workspace();return false;"><i class="icon-ok"></i> Sauvegarder</a></li>
+               </ul>
+  		</div>
+		<div class="row">
+	  	<p class="text-center lead">
+	  	
+	  	</p>
 	  	<div class="span1">	
 			<p class="text-left"><a href="#"  onclick="slider.previous();"><img src="{{ STATIC_PREFIX }}/img/chevron-left.png" /></a></p>
 		</div>
 	  	
 	  	<div class="span10">
+	  			
 	  		<div class="row-fluid">
+	  			
 		 		<div id="search-results-hook"></div>
 			</div>	
 		</div>
@@ -172,6 +182,7 @@ var search_api = new SearchCommand(api_url);
 
 var result_index = 0;
 var queries = [];
+var query_result_history = {};
 
 var current_workspace = null;
 
@@ -196,7 +207,7 @@ $(function () {
 	
 	
 	var options = {
-			title: "Astuce",
+			title: "Espace de travail",
 			content: "Sélectionner ou créer un espace de travail pour la variable à chercher.",
 			placement: 'bottom',
 			trigger:'manual',
@@ -256,9 +267,7 @@ function display_result(type,data,query,options) {
 		$('#search-results-hook').prepend('<div id="' + result_hook + '"/>');
 		$('#' + result_hook).addClass('span6');
 		
-		
-		
-		draw_result(type,data,data.name,result_hook);
+		draw_result(query,type,data,data.name,result_hook);
 		
 		queries.push(query);
 
@@ -326,17 +335,26 @@ function draw_serie_list(data,render_to,query,total,took,from) {
 				data_ctx['description'] = data[i][1]['description']
             	data_ctx['source'] = data[i][1]['source']
             	data_ctx['zone'] = data[i][1]['zone']
-				draw_result(data[i][1].display,data_ctx,data[i][1].name,result_hook);
+				draw_result(data[i][0],data[i][1].display,data_ctx,data[i][1].name,result_hook);
 				$('#' + result_hook).addClass('span12');
 			});
 		});
 	
 }
 
-function open_workspace(id,name) {
-	search_api.open_workspace(id, name, function(id,name,data,options) { 
-			update_workspace(id,name,data);
-			search_serie(id,name);
+function open_workspace(serie_id,name) {
+	search_api.open_workspace(serie_id, name, function(id,serie_id,name,data,options) { 
+			update_workspace(id,serie_id,name,data,options);
+			
+			if (options.queries == undefined) {
+				search_serie(serie_id,name);			
+			}
+			else {
+				$.each(options.queries, function (i,query) {
+					search_serie(query,name);	
+				});
+			}
+
 		});
 }
 
@@ -344,10 +362,10 @@ function create_workspace(serie_id,name) {
 	search_api.open_workspace(serie_id,name, update_workspace);
 }
 
-function update_workspace(id,name,data,options) {
-	current_workspace = {'name':name, 'data':data, 'id':id};
-	$('#current-workspace').html('<a id="current-workspace-btn" class="text-center" href="#"><i class="icon-globe"></i> '  + name + '</a>');
-	$('#current-workspace-btn').on("click", function () {search_serie(id,name);return false;});
+function update_workspace(id,serie_id,name,data,options) {
+	current_workspace = {'name':name, 'data':data, 'id':id, 'serie_id':serie_id, 'options' : options};
+	$('#current-workspace').html('<a id="current-workspace-btn" class="text-center" href="#" title="' + name + '"><i class="icon-globe"></i> ' + limit_size(name,25) + '</a>');
+	$('#current-workspace-btn').on("click", function () {search_serie(serie_id,name);return false;});
 	
 }
 
@@ -378,9 +396,16 @@ function correlate_serie() {
 		
 		window.setTimeout(function () {$('#current-workspace').popover('hide');},2000);
 	}
+}
+
+function save_workspace() {
+	if (current_workspace != null) {
+	
 		
-
-
+		current_workspace.options.queries = queries;
+		
+		search_api.save_workspace(current_workspace.id,current_workspace, function(){});
+	}
 }
 
 </script>
