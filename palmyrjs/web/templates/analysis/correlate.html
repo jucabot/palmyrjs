@@ -149,7 +149,13 @@ function display_result(type,data,query) {
 
 function create_workspace(query) {
 	ftcmd.index_query(query, current_filter, function(id) {
-		search_api.open_workspace(id,query, function(){
+		var title = query;
+		
+		if (current_filter_name != undefined) {
+			title += ' (' + current_filter_name + ')'; 
+		}
+	
+		search_api.open_workspace(id,title, function(){
 				window.location = search_app_url + '?tab=workspaces';
 		});
 	});

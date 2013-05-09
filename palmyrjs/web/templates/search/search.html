@@ -150,7 +150,7 @@ dd {
 	{{~it.workspaces:workspace:i}}
   		<div class="span3" style="margin:0%" >
 	  		<p class="text-center">
-		  		<a href="#" onclick="open_workspace('{{=workspace.value}}','{{=workspace.name}}');return false;"><img src="{{=it.STATIC_PREFIX }}/img/workspace-icons/{{=workspace.icon_path}}" /></a>
+		  		<a href="#" onclick="open_workspace('{{=workspace.serie_id}}','{{=workspace.name}}');return false;"><img src="{{=it.STATIC_PREFIX }}/img/workspace-icons/{{=workspace.icon_path}}" /></a>
 		  		<br/><span>{{=workspace.name}} <a href="#" onclick="remove_workspace('{{=workspace.id}}'); return false;"><i class="icon-remove"></i></a></span>
 		  		</p>
   		</div>
@@ -313,7 +313,7 @@ function draw_serie_list(data,render_to,query,total,took,from) {
    
    	html += '<div id="display_result" class="span8">';
     if (data.length == 0) {
-    	html += '<p class="text-info">Oups! Il n\'y a pas de résultat pour cette recheche ' + title + '</p>';
+    	html += '<p class="text-info">Oups! Il n\'y a pas de résultat pour cette recheche ' + query + '</p>';
     }
     html += '</div>';
   	
@@ -334,7 +334,7 @@ function draw_serie_list(data,render_to,query,total,took,from) {
 }
 
 function open_workspace(id,name) {
-	search_api.open_workspace(id, name, function(id,name,data) { 
+	search_api.open_workspace(id, name, function(id,name,data,options) { 
 			update_workspace(id,name,data);
 			search_serie(id,name);
 		});
@@ -344,7 +344,7 @@ function create_workspace(serie_id,name) {
 	search_api.open_workspace(serie_id,name, update_workspace);
 }
 
-function update_workspace(id,name,data) {
+function update_workspace(id,name,data,options) {
 	current_workspace = {'name':name, 'data':data, 'id':id};
 	$('#current-workspace').html('<a id="current-workspace-btn" class="text-center" href="#"><i class="icon-globe"></i> '  + name + '</a>');
 	$('#current-workspace-btn').on("click", function () {search_serie(id,name);return false;});

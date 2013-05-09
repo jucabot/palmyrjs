@@ -272,7 +272,7 @@ function SearchCommand(api_url)
 		this._call_api(
 			{ 'cmd':cmd, 'id': id,'name':name},
 			function(response) {
-				done(response.id,response.name,response.data);
+				done(response.id,response.name,response.data,response.options);
 			});
 		
 	}
