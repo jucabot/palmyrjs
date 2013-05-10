@@ -233,9 +233,30 @@ function search_serie(query,name,from) {
 	}
 	
 	if (query != '') {
-		search_api.search(query, from, display_result);
+		if (query.indexOf('#') > 0) {
+			lag = query.substring(query.indexOf('#') + 1);
+			serie_id = query.substring(0,query.indexOf('#'));
+			search_api.search(serie_id, from, function(type,data,serie_id,options) {
+				if (type == 'timeline') {
+					data.series[0].data = lag_timeserie(data.series[0].data,lag);
+					data.series[0].name += ' (' +  lag*-1 + ' mois)';
+				}
+				display_result(type,data,query,options);
+			});			
+		} 
+		else {
+			search_api.search(query, from, function(type,data,query,options) {
+				display_result(type,data,query,options);
+			});
+		}
+	
+		
 	}
 	
+}
+
+function get_lagged_serie(id,lag) {
+	search_serie(id + '#' + lag,'');
 }
 
 

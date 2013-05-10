@@ -24,6 +24,16 @@ function translate_status(status) {
 	return capFirstLetter(text);
 }
 
+function formatZeroNumber(num) {
+	
+	if (num < 10) {
+		return '0' + num;
+	}
+	else {
+		return num + '';
+	}
+}
+
 function roundNumber(num, dec) {
 	var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
 	return result;
@@ -76,7 +86,32 @@ function serie_std(serie)
 
 }
 
-
+function lag_timeserie(serie,month_lag) {
+	
+    $.each(serie, function (i,item) {
+    	date = new Date(item[0]);
+        
+        if (date != null) {
+            
+        	if (date.getMonth()*1+1 - month_lag > 0) {
+        		item[0] = date.getFullYear() + '-' + formatZeroNumber(date.getMonth()*1+1 - month_lag) + '-' + formatZeroNumber(date.getDate());
+        	}
+        	else {
+        		delta_year = Math.abs(Math.floor((date.getMonth()+1 - month_lag)/12));
+        		if ((date.getMonth()+1 - month_lag) == 0) {
+        			delta_month = 1;
+        		}
+        		else {
+        			delta_month = 12 - Math.abs(date.getMonth()+1 - month_lag)%12;
+        		}
+        		item[0] = (date.getFullYear()-delta_year) + '-' + formatZeroNumber(delta_month) + '-' + formatZeroNumber(date.getDate());
+        	}
+            
+        }
+    });
+    return serie;
+	
+}
 
 function convert_dict_to_tuples(dictionary)
 {
@@ -1387,7 +1422,7 @@ function Heatmap(options)
 		
 		for (var i=0; i<cat_len; i++)
 		{
-			html += "<th>lag-" + options.categories[i] + "</th>";
+			html += "<th>" + options.categories[i] + " mois</th>";
 		}
 		html += "</tr>";
 		
@@ -1410,12 +1445,14 @@ function Heatmap(options)
 					
 					if (result.r2 >= 0.7 )
 					{
-						html += "<td title=\"R²=" + result.r2 + "\" style=\"background-color:rgb(0," + Math.round(255-Math.abs(result.r2)*125) + "," + Math.round(255-Math.abs(result.r2)*125) + ")\"></td>";
+						html += '<td title="R²=' + roundNumber(result.r2 * 100,2) + "%\" style=\"cursor:pointer;background-color:rgb(0," + Math.round(255-Math.abs(result.r2)*125) + "," + Math.round(255-Math.abs(result.r2)*125) + ')" onclick="get_lagged_serie(\'' + options.series[i].id + '\',' + options.categories[j] + ');"></td>';
 					}
-					else
+					else if (result.r2 > 0.5)
 					{
-						html += "<td title=\"R²=" + result.r2 + "\" style=\"background-color:rgb(" + Math.round(255-Math.abs(result.r2)*255) + "," + Math.round(255-Math.abs(result.r2)*255) + ",255)\"></td>";
-												
+						html += '<td title="R²=' + roundNumber(result.r2 * 100,2) + "%\" style=\"cursor:pointer;background-color:rgb(" + Math.round(255-Math.abs(result.r2)*255) + "," + Math.round(255-Math.abs(result.r2)*255) + ',255)" onclick="get_lagged_serie(\'' + options.series[i].id + '\',' + options.categories[j] + ');"></td>';					
+					}
+					else {
+						html += '<td title="R²=' + roundNumber(result.r2 * 100,2) + '%\" style=\"background-color:white;" onclick="get_lagged_serie(\'' + options.series[i].id + '\',' + options.categories[j] + ');"></td>';						
 					}
 				}
 			}
@@ -1433,15 +1470,12 @@ function Heatmap(options)
 
 }
 
-
-
-
 function draw_heatmap(name,data,render_to,title) {
 	
 		var options = {
 			renderTo : '#' + render_to,
 			categories : [],
-			series : []
+			series : [],
 		};
 		
 		$.each(data, function(i,result) {
