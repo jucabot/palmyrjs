@@ -216,11 +216,11 @@ function Slider()
 
 
 function set_message(status,message) {
-	('#message').html('<div class="alert alert-' + status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + capFirstLetter(status) + '!</strong><br/>' + message + '</div>');
+	$('#message').html('<div class="alert alert-' + status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + capFirstLetter(status) + '!</strong><br/>' + message + '</div>');
 	
 }
 function reset_message() {
-	('#message').html('');
+	$('#message').html('');
 	
 }
 
