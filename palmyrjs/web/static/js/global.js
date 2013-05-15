@@ -525,11 +525,11 @@ function FeatureTableCommand(api_url,ftable_name)
 		
 	}
 	
-	this.nl_query = function (query,filter,done) {
+	this.nl_query = function (query,filter,filter_name,done) {
 		var cmd = 'nl-query';
 		
 		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'query': query, 'filter':filter },
+			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'query': query, 'filter':filter, 'filter_name':filter_name },
 			function(response) {
 					done(response.type,response.data,response.query);
 			});
