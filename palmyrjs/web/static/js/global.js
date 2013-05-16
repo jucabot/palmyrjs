@@ -353,23 +353,7 @@ function FeatureTableCommand(api_url,ftable_name)
 			});
 	}
 	
-	this.set_target = function (fname,done) {
-		var cmd = 'set-target';
-		this._call_api(
-			{ 'ftable' : this.ftable_name, 'feature_name': fname, 'cmd' : cmd },
-			function(response) {
-					done();
-			});
-	}
 	
-	this.reset_target = function (done) {
-		var cmd = 'reset-target';
-		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd },
-			function(response) {
-					done();
-			});
-	}
 
 	this.set_class = function (fname,is_class,done) {
 		var cmd = 'set-class';
@@ -377,24 +361,6 @@ function FeatureTableCommand(api_url,ftable_name)
 			{ 'ftable' : this.ftable_name, 'feature_name': fname, 'cmd' : cmd, 'is_class': is_class },
 			function(response) {
 					done();
-			});
-	}
-
-	this.use_feature = function (fname,use_it,done) {
-		var cmd = 'use-feature';
-		this._call_api(
-			{ 'ftable' : this.ftable_name, 'feature_name': fname, 'cmd' : cmd, 'use_it': use_it },
-			function(response) {
-					done();
-			});
-	}
-	
-	this.toggle_feature = function (fname,done) {
-		var cmd = 'toggle-feature';
-		this._call_api(
-			{ 'ftable' : this.ftable_name, 'feature_name': fname, 'cmd' : cmd },
-			function(response) {
-					done(response.fname,response.use);
 			});
 	}
 
@@ -410,15 +376,7 @@ function FeatureTableCommand(api_url,ftable_name)
 	
 	}
 	
-	this.build_model = function(filter_name,filter, done_func) {
 	
-		var cmd = 'build-model';
-		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'filter':filter,'filter_name':filter_name },
-			function(response) {
-					done_func(response.model_info);
-			});
-	}
 	
 	this.add_feature = function(name,type,code,done) {
 	
@@ -457,15 +415,6 @@ function FeatureTableCommand(api_url,ftable_name)
 					done();
 			});
 	}
-	this.save_model = function(model_name,done) {
-	
-		var cmd = 'save-model';
-		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd },
-			function(response) {
-					done(response.name);
-			});
-	}
 	
 	this.save = function (filename) {
 		var cmd = 'save';
@@ -480,50 +429,9 @@ function FeatureTableCommand(api_url,ftable_name)
 		}
 	}
 	
-	this.select_best_features = function (filter, done) {
-		var cmd = 'select-best-features';
-		
-		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'filter': filter },
-			function(response) {
-					done(response.kbest);
-			});
-		
-	}
 	
-	this.get_model_info = function (name,done) {
-		var cmd = 'get-model-info';
-		
-		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'name' : name },
-			function(response) {
-					done(response.model_info);
-			});
-		
-	}
 	
-	this.get_current_model_info = function (done) {
-		var cmd = 'get-current-model-info';
-		
-		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd },
-			function(response) {
-					if (response.model_info != null)
-						done(response.model_info);
-			});
-		
-	}
-
-	this.apply_prediction = function (model_name, input,output,done) {
-		var cmd = 'apply-prediction';
-		
-		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'model-name': model_name, 'input' : input, 'output': output },
-			function(response) {
-					done();
-			});
-		
-	}
+	
 	
 	this.nl_query = function (query,filter,filter_name,done) {
 		var cmd = 'nl-query';
@@ -580,16 +488,7 @@ function FeatureTableCommand(api_url,ftable_name)
 		
 	}
 	
-	this.remove_model = function (model_name, done) {
-		var cmd = 'remove-model';
-		
-		this._call_api(
-			{ 'ftable' : this.ftable_name, 'cmd' : cmd, 'model': model_name },
-			function(response) {
-					done();
-			});
-		
-	}
+	
 	
 	this.index_query = function (query, filter, done) {
 		var cmd = 'index-query';
@@ -626,12 +525,12 @@ function draw_result(id,type,data,query,result_hook) {
 		drawing = draw_table('',data,result_hook,'');
 	}
 	else if (type == 'box-plot') {
-		//return draw_bar('',data,'result',query,'frequency %');
+		
 		drawing = draw_box_plot('',data,result_hook);
 	}
 	else if (type == 'stacked-bar') {
 		drawing = draw_percent_stacked_bar('',data,result_hook,query,'');
-		//draw_mosaic_box('',data,result_hook,query,data.label_x,data.label_y);
+		
 	}
 	else if (type == 'scatter') {
 		drawing = draw_scatter('',data,result_hook,query,'');
@@ -995,22 +894,22 @@ function draw_table(name,data,render_to,title) {
   	if (data.has_prev) {
   		query = '(num_page:' + (data.page_num - 1) + ')';
 
-  		html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter, display_result);">&laquo;</a></li>'
+  		html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter,current_filter_name, display_result);">&laquo;</a></li>'
   	}
     $.each(data.list_pages,function (i) {
     	var num_page = 0;
     	num_page = data.list_pages[i]+1;
     	query = '(num_page:' + i + ')';
     	if (i == data.page_num) {
-	    	html += '<li class="active"><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter, display_result);">' + num_page + '</a></li>'
+	    	html += '<li class="active"><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter,current_filter_name, display_result);">' + num_page + '</a></li>'
 	    }
 	    else {
-	    	html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter, display_result);">' + num_page + '</a></li>'
+	    	html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter,current_filter_name, display_result);">' + num_page + '</a></li>'
 	    }
     });
   	if (data.has_next) {
   		query = '(num_page:' + (data.page_num + 1) + ')';
-  		html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter, display_result);">&raquo;</a></li>'
+  		html += '<li><a href="#top" onclick="ftcmd.nl_query(\'' + query + '\',current_filter,current_filter_name, display_result);">&raquo;</a></li>'
   	}
 
     html += '</ul>';
@@ -1023,135 +922,7 @@ function draw_table(name,data,render_to,title) {
 	$('#'+render_to).html(html);
 	
 }
-/*
-function draw_mosaic_box(name,data,render_to,title,xTitle,yTitle) {
-	$('#' + render_to).html('');
-	var margin = {top: 40, right: 20, bottom: 50, left: 60},
-	    width = 860 - margin.left - margin.right,
-	    height = 500;
-	
-	var margin_box = 2;
-	
-	var formatPercent = d3.format(".0%");
-	
-	var label_x = xTitle;
-	var label_y = yTitle;
-	var classes = data.classes;
-	var series = data.series;
-	
-	
-	var pos_x = 0.0;
-	var pos_y = 0.0;
-	var boxes = [];
-	var last_x = 0.0;
-	var range_x = [];
-	var range_y = [];
-	
-	for (var i=0;i<classes[0].length;i++)
-	  {
-		pos_y = 0.0;
-		
-	 	for (var j=0;j<classes[1].length;j++)
-	  	{
-			var box = series[i*classes[1].length+j];
-			box.x = pos_x;
-			last_x = box.w;
-			box.y = pos_y;
-			pos_y += box.h;
-			box.class_x = classes[0][i];
-			box.class_y = classes[1][j];
-			
-		}
-		pos_x += last_x;
-		
-		range_x.push(last_x);
-		
-	  }
-	
-	for (var j=0;j<classes[1].length;j++)
-	{
-		range_y.push(series[j].h);	
-	}
-	var stack_x = stack_list(range_x);
-	
-	var stack_y = stack_list(range_y);
-	         
-	
-	var svg = d3.select("#" + render_to).append("svg")
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
-		.attr("class", "box-bg")
-		.append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-	
-	
-	svg.selectAll(".box-bg")
-		.data(classes[0])
-		.enter().append("text")
-			.attr("font-size","90%")
-			.attr("font-weight","bold")
-			.text(function (d) {return d; })
-			.attr("x", function(d)  { var i = classes[0].indexOf(d); return (stack_x[i] - series[i*classes[1].length].w/2 ) * width -this.getComputedTextLength()/2; })
-			.attr("y", function(d)  { return height +10; })
-			
-	svg.selectAll(".box-bg")
-		.data(classes[1])
-		.enter().append("text")
-			.text(function (d) {return d; })
-			.attr("font-size","90%")
-			.attr("font-weight","bold")
-			.attr("y", -5)
-			.attr("x", function(d)  { var i = classes[1].indexOf(d); return -(stack_y[i] - series[i].h/2) * height - this.getComputedTextLength()/2; })
-			.attr("transform", "rotate(-90) ")
-	  
-	  
-	svg.append("g")
-		.append("text")
-			.text(label_y)
-			.attr("transform", "rotate(-90) ")
-			.attr("x",function (d) {return -height/2+ this.getComputedTextLength()/2;})
-			.attr("y",-40)
-			.attr("style","font-size : 130%;font-weight: bold;")  
-	
-	svg.append("g")
-		.append("text")
-			.text(label_x)
-			.attr("x",function (d) {return width/2 - this.getComputedTextLength()/2; })
-			.attr("y",height + 50)
-			.attr("style","font-size : 130%;font-weight: bold;") 
-	
-	 
-	svg.selectAll(".box")
-		.data(series)
-		.enter().append("rect")
-			.attr("fill", "steelblue")
-			.attr("style", "border: solid 5px white;")
-			.attr("x", function(d)  { return d.x * width + 1; })
-			.attr("width", function(d) { return d.w * width - 2 ; })
-			.attr("y", function(d) { return d.y * height + 1 ; })
-			.attr("height", function(d) { return d.h * height - 2 ; })
-	
-	svg.selectAll(".box-bg")
-		.data(series)
-		.enter().append("text")
-			.text(function (d) {return d.class_x + " : " + Math.round(d.w * 100) + '%'; })
-			.attr("x", function(d)  { return (d.x+ d.w/2) * width - this.getComputedTextLength()/2 ; })
-			.attr("y", function(d)  { return (d.y+ d.h/2) * height - 10; })
-			.attr("fill", "white")
-			.attr("style","font-size:90%;")
-	
-	svg.selectAll(".box-bg")
-		.data(series)
-		.enter().append("text")
-			.text(function (d) {return d.class_y + " : " +  Math.round(d.h * 100) + '%'; })
-			.attr("x", function(d)  { return (d.x+ d.w/2) * width - this.getComputedTextLength()/2 ; })
-			.attr("y", function(d)  { return (d.y+ d.h/2) * height  + 10; })
-			.attr("fill", "white")
-			.attr("style","font-size:90%;")
-			
 
-}
-*/
 function draw_scatter(name,data,render_to,title,xTitle,yTitle,show_label) {
 	var chart;
 	

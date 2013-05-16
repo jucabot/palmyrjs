@@ -42,14 +42,9 @@
 								</tr>
 						</thead>
 						{% for fname,feature in ftable.get_features %}
-							<tr {% if not feature.is_usable %} class="warning" {% endif %} >
+							<tr>
 								<td>
-									{% ifequal fname ftable.target %}
-										<span class="label label-success">Cible <i class="icon-remove icon-white clickable" onclick="ftcmd.reset_target(function () {document.location = target_url;});"></i></span>
-									{% endifequal %}
-									{% if not feature.is_usable %}
-										<span class="label label-reverse">Ecartée</span>
-									{% endif %} 
+
 									{% if feature.is_virtual %} 
 										<span class="label label-info">Virtuelle <i class="icon-edit icon-white clickable" onclick="ftcmd.get_feature('{{fname}}',display_edit_feature);"></i> <i class="icon-trash icon-white clickable" onclick="ftcmd.remove_feature('{{fname}}',function () {document.location = target_url;});"></i></span>
 									{% endif %} 
@@ -89,11 +84,7 @@
 								{% endif %}
 
 								<td>
-									{% ifnotequal fname ftable.target %}
-										{% if feature.target_allowed %}
-										<button class="btn btn-mini" type="button" onclick="ftcmd.set_target('{{fname}}',function () {document.location = target_url;});">Cibler</button>
-										{% endif %}	
-									{% endifnotequal %}
+									
 												
 								</td>
 							</tr>
@@ -107,12 +98,8 @@
 				  <div class="modal-header">
 				    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 				    <h3  id="{{ fname|slugify }}-modal-label">Feature {{ fname }}</h3>
-				    {% ifequal fname ftable.target %}
-						<span class="label label-success">Cible</span>
-					{% endifequal %}
-					{% if not feature.is_usable %} 
-						<span class="label label-reverse">Ecartée</span>
-					{% endif %} 
+				   
+					
 					{% if feature.is_virtual %} 
 						<span class="label label-info">Virtuelle</span>
 					{% endif %} 
@@ -213,7 +200,6 @@
 {% include "analysis/inc_save_popup.html" %}				
 {% include "analysis/inc_add_feature_popup.html" %}
 {% include "analysis/inc_edit_feature_popup.html" %}
-{% include "analysis/inc_search_correlation_popup.html" %}
 			   
 {% endblock %}
 

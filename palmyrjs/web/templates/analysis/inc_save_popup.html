@@ -6,7 +6,7 @@
     <h3 id="save-modal-label">Enreistrer sous...</h3>
   </div>
   <div class="modal-body">
-	<input id="save-filename" type="text" placeholder="Entrer le nom..." value="{{ dpath }}">  </div>
+	<input id="save-filename" class="input-block-level" type="text" placeholder="Entrer le nom..." value="{{ dpath }}">  </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Annuler</button>
     <button class="btn btn-primary" onclick="ftcmd.save($('#save-filename').val());$('#save-modal').modal('hide');">Enregistrer</button>
