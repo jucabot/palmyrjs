@@ -955,19 +955,14 @@ function draw_scatter(name,data,render_to,title,xTitle,yTitle,show_label) {
                     enabled: true,
                     text: data.label_x
                 },
-	        startOnTick: true,
-	        endOnTick: true,
-	        showLastLabel: true
+	        
 		},
 		yAxis: {
 				
                 title: {
                     text: data.label_y,
                 },
-                minorTickInterval: 1.0,
-                startOnTick: true,
-	        endOnTick: true,
-	        showLastLabel: true
+                
         },
 		tooltip: {
             formatter: function() {
@@ -1033,6 +1028,7 @@ function draw_box_plot(name,data,render_to,title)
 		        enabled: false
 		    },
 		
+		    
 		    xAxis: {
 		        categories: data.categories,
 		        title: {
@@ -1044,7 +1040,7 @@ function draw_box_plot(name,data,render_to,title)
 		        title: {
 		            text: data.label_y
 		        },
-		        minorTickInterval: 1.0,
+		        
 		        
 		    },
 		
