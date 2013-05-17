@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load url from future %}
-
+{% load raw %}
 {% load breadcrumbs %}
 
 {% block content %}
@@ -17,57 +17,121 @@
 			{{ path|breadcrumb }}
 		</div>
 		<div class="span2">
-			<button class="btn btn-primary" href="#upload-file" role="button" data-toggle="modal"><i class="icon-upload icon-white"></i> Importer</button>					
+			<button class="btn btn-primary" onclick="$('#fileupload').click();"><i class="icon-upload icon-white"></i> Importer</button>					
 		</div>
 	</div>
 	<div id="message"></div>
 	
+	<div id="progress" class="progress progress-striped active hide">
+	    	<div class="bar" style="width: 0%;"></div>	
+	</div>
 		
 	<div class="row-fluid" id="folders">
+
+	</div>
+	
+	
+	<div class="row-fluid hide">
+		<form method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			<input id="fileupload" type="file" name="file" multiple accept=".csv"></input>
+		
+		</form>
+	</div>
+	
+	{% raw %}
+
+<script id="template-file-list" type="text/dot.js">
+
 	  	<div class="span12">
 		 	
-		 	{% for dir in directories %}
+		 	{{~it.directories:dir:i}}
 	  		<div class="span2" >
 	  			<p class="text-center">
-	  			<a href="?path={{ path }}/{{ dir }}"><img src="{{ STATIC_PREFIX }}/img/folder.png" /></a>
+	  			<a href="?path={{=it.path}}/{{=dir}}"><img src="{{=it.static_prefix}}/img/folder.png" /></a>
 	  			<br/>
-	  			<span>{{ dir }}
+	  			<span>{{=dir}}
 	  			</p>
 	  		</div>
-			{% endfor %}
+			{{~}}
 			
-			{% for file in files %}
-		  		<div class="span2"><p class="text-center"><a href="{% url 'create-analysis' %}?dpath={{ path }}/{{ file }}"><img src="{{ STATIC_PREFIX }}/img/file.png" /></a>
+			{{~it.files:file:i}}
+		  		<div class="span2"><p class="text-center"><a href="{{=it.create_url}}?dpath={{=it.path}}/{{=file}}"><img src="{{=it.static_prefix}}/img/file.png" /></a>
 	  			<br/>
-	  			<span>{{ file }} <i class="icon-remove" title="Supprimer"></i></span>
+	  			<span>{{=file}} <i class="icon-remove" title="Supprimer"></i></span>
 	  			</p>
 	  			</div>
-			{% endfor %}
+			{{~}}
 			
-		
 		</div>
-	
-	<div  class="row-fluid">
-		<div id="upload_file" class="span12">
-		<hr>
-		<h2>Importer un fichier</h2>
-				{% if upload_form.errors %}
-					<div class="alert alert-error">
-						<h4>Erreur!</h4>
-						<p>{{upload_form.errors}}</p>
-					</div>
-				{% endif %}
-				
-				<form method="post" action="{% url 'upload-datasource' %}" enctype="multipart/form-data">
-				{% csrf_token %}
-				<input type="file" name="{{ upload_form.file.name }}" id="id_file" accept=".csv" runat="server" />
-				<input name="path" type="hidden" value="{{ path }}" />
-			    <button id="submit_file" class="btn btn-primary" type="submit" >Importer</button>
-				</form>
-				
-				</div>
-		
-		</div>
-	</div>
 
+</script>
+{% endraw %}
+
+{% endblock %}
+
+{% block script %}
+<script src="{{ STATIC_PREFIX }}/jquery-fileupload/js/vendor/jquery.ui.widget.js"></script>
+<script src="{{ STATIC_PREFIX }}/jquery-fileupload/js/jquery.iframe-transport.js"></script>
+<script src="{{ STATIC_PREFIX }}/jquery-fileupload/js/jquery.fileupload.js"></script>
+
+<script>
+var path = '{{ path }}';
+var api_url = '{% url 'api' %}';
+var static_prefix = '{{ STATIC_PREFIX }}';
+var create_url = '{% url 'create-analysis' %}';
+var api = new Command(api_url);
+
+var list_data_files = doT.template($('#template-file-list').text());
+
+$(function () {
+
+	load_dir();
+
+    $('#fileupload').fileupload({
+        url: '{% url 'api' %}?cmd=upload-file&path=' + path,
+        dataType: 'json',
+        always: function (e, data) {
+        	var status = data._response.result.status;
+        	if (status == 'success') {
+	         	$('#progress').addClass('progress-success');
+	         	$('#progress').removeClass('active');
+	         	$('#progress .bar').html("Fichier t&eacute;l&eacute;charg&eacute;");
+	            load_dir();
+	            $('#progress').hide();
+	        }
+	        else {
+	        	$('#progress').hide();
+	        	set_message(status,data._response.result.message)
+	        }
+        },
+       
+        progress: function (e, data) {
+        	$('#progress').show();
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress .bar').css(
+                'width',
+                progress + '%'
+            );
+        }
+    });
+});
+
+function load_dir() {
+
+	api.list_data_files(path, function (directories,files) {
+	 	$('#folders').html(list_data_files(
+	 		{ 
+	 			path:path,
+	 			static_prefix :static_prefix,
+	 			directories : directories,
+	 			files: files,
+	 			create_url: create_url,
+	 		}));
+	 
+	 });
+}
+
+
+</script>
 {% endblock %}

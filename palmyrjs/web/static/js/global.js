@@ -216,7 +216,7 @@ function Slider()
 
 
 function set_message(status,message) {
-	$('#message').html('<div class="alert alert-' + status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + capFirstLetter(status) + '!</strong><br/>' + message + '</div>');
+	$('#message').html('<div class="alert alert-' + status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + translate_status(status) + '!</strong><br/>' + message + '</div>');
 	
 }
 function reset_message() {
@@ -224,7 +224,46 @@ function reset_message() {
 	
 }
 
+function Command(api_url)
+{
+	this.url = api_url;
+	
+	this.init = function() {
 
+	}
+	
+	this._call_api = function (data, done) {
+		$("body").css("cursor", "progress");
+		return $.getJSON(
+			this.url,
+			data,
+			function(data) {
+				if (data.status == 'success' && done != null) {
+					done(data);
+					$('#message').html('');
+				}
+				
+				if (typeof data.message != "undefined" && data.message != '') {
+					$('#message').html('<div class="alert alert-' + data.status + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + translate_status(data.status) + '!</strong><br/>' + data.message + '</div>');
+				}
+				$("body").css("cursor", "auto");
+			});
+
+	}
+	
+	this.list_data_files = function (path, done) {
+		var cmd = 'list-data-files';
+		this._call_api(
+			{ 'cmd':cmd, 'path': path},
+			function(response) {
+				done(response.directories,response.files);
+			});
+		
+	}
+	
+	this.init();
+
+}
 function SearchCommand(api_url)
 {
 	this.url = api_url;
