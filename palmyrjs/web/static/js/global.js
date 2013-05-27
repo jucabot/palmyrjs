@@ -1,3 +1,18 @@
+Array.prototype.removeIndex = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
+Array.prototype.remove = function(item) {
+	var i = this.indexOf(item);
+	if (i >= 0) {
+		return this.removeIndex(i);
+	}
+	else {
+		return this;
+	}
+};
+
 function capFirstLetter(string)
 {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -301,10 +316,10 @@ function SearchCommand(api_url)
 		
 	}
 	
-	this.correlate = function (query,serie_data,done) {
+	this.correlate = function (query,serie_data,filters,done) {
 		var cmd = 'correlate';
 		this._call_api(
-			{ 'cmd':cmd, 'query': query},
+			{ 'cmd':cmd, 'query': query,'filters':filters},
 			function(response) {
 				done(response.data);
 			});

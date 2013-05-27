@@ -26,7 +26,7 @@ dd {
 			     		<span class="add-on"><div id="current-workspace"><a href="#" onclick="slider.show('#workspaces');return false;"><i id="current-workspace-icon" class="icon-globe"></i></a></div></span>
 				  		<input id="search-query" type="text" class="input-xxlarge"  placeholder="Rechercher des séries de données par mots clefs...">
 				  		<button type="submit" class="btn btn-primary" onclick="search_serie();return false;"><i class="icon-search icon-white"></i> Rechercher</button>
-				  		<button id="btn-correlation-search" class="btn btn-success" onclick="correlate_serie();return false;"><i class="icon-random icon-white"></i> Correler</button>
+				  		<button id="btn-correlation-search" class="btn btn-success" onclick="show_correlation_search_modal(); return false;"><i class="icon-random icon-white"></i> Correler</button>
 					  	<!-- <button class="btn" id="btn-search-actions"><i class="icon-cog"></i></button>  -->
 				  	</div>
 				</form>
@@ -52,7 +52,7 @@ dd {
 	  	<div class="span10">
 	  		<div class="row-fluid">
 		 	{% for domain in domains %}
-		  		<div class="span3" >
+		  		<div class="span3" style="margin-left:0px" >
 			  		<p class="text-center">
 				  		<a href="#" onclick="search_serie('category:{{ domain.key }}');return false;"><img src="{{ STATIC_PREFIX }}/img/domain-icons/{{ domain.icon_path }}" /></a>
 				  		<br/><span>{{ domain.name }} </span>
@@ -153,6 +153,35 @@ dd {
 	</div>
 </div>
 
+
+<div id="correlation-search" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="correlation-search-modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="correlation-search-label">Rechercher des corr&eacute;lations...</h3>
+  </div>
+  <div class="modal-body" id="correlation-search-body">
+  
+  		<div class="row-fluid" id="category_list">
+		 	{% for domain in domains %}
+		  		<div class="span2" >
+			  		<p class="text-center">
+				  		<a href="#" onclick="search_serie('category:{{ domain.key }}');return false;"><img src="{{ STATIC_PREFIX }}/img/domain-icons/{{ domain.icon_path }}" /></a>
+				  		<br/><span><label class="checkbox inline">
+  							<input type="checkbox" checked id="chk-category-search-{{ domain.name }}" value="{{ domain.name }}" onclick="toggle_category_correlation(this);">{{ domain.name }}
+							</label> </span>
+				  		</p>
+		  		</div>
+			{% endfor %}
+		</div>
+	
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Annuler</button>
+    <button class="btn btn-success" onclick="correlate_serie();$('#correlation-search').modal('hide');return false;">Corr&eacute;ler</button>
+  </div>
+</div>	
+
+
 {% raw %}
 
 <script id="template-workspace-list" type="text/dot.js">
@@ -167,6 +196,8 @@ dd {
 	{{~}}				
 	</div>
 </script>
+
+
 {% endraw %}
 
 
@@ -185,6 +216,8 @@ var queries = [];
 var query_result_history = {};
 
 var current_workspace = null;
+
+var correlation_search_exclude_list = [];
 
 var workspace_list_template = doT.template($('#template-workspace-list').text());
 
@@ -376,6 +409,10 @@ function open_workspace(serie_id,name) {
 					search_serie(query,name);	
 				});
 			}
+			
+			if (options.correlation_filters != undefined) {
+				correlation_search_exclude_list = options.correlation_filters;			
+			}
 
 		});
 }
@@ -401,10 +438,38 @@ function update_workspaces() {
 	});
 }
 
+function show_correlation_search_modal() {
+
+	if (current_workspace != null ) {
+	
+		var chks = $('#correlation-search-body :checkbox');
+		
+		$.each(chks, function (i,item) { 
+			if (correlation_search_exclude_list.indexOf(item.value)>=0) {
+				item.checked = false;
+			}
+			else {
+				item.checked = true;
+			}
+		
+		
+		});
+		
+		$('#correlation-search').modal();
+	}
+	else {
+		
+		$('#current-workspace').popover('show');
+		
+		window.setTimeout(function () {$('#current-workspace').popover('hide');},2000);
+	}
+}
+
+
 function correlate_serie() {
 
 	if (current_workspace != null ) {
-		search_api.correlate(current_workspace.serie_id,current_workspace.data, function (data,took) {
+		search_api.correlate(current_workspace.serie_id,current_workspace.data,correlation_search_exclude_list, function (data,took) {
 			if (!slider.has_slide("#correlation-board")) {
 				slider.add_slide("#correlation-board");
 			}
@@ -422,13 +487,23 @@ function correlate_serie() {
 
 function save_workspace() {
 	if (current_workspace != null) {
-	
-		
 		current_workspace.options.queries = queries;
-		
+		current_workspace.options.correlation_filters = correlation_search_exclude_list;
 		search_api.save_workspace(current_workspace.id,current_workspace, function(){});
 	}
 }
+
+function toggle_category_correlation(chk) {
+
+	if (chk.checked) {
+		correlation_search_exclude_list.remove(chk.value);
+	}
+	else {
+		correlation_search_exclude_list.push(chk.value);
+	}
+
+}
+
 
 </script>
 
