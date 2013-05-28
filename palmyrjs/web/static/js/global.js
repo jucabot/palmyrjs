@@ -321,7 +321,7 @@ function SearchCommand(api_url)
 		this._call_api(
 			{ 'cmd':cmd, 'query': query,'filters':filters},
 			function(response) {
-				done(response.data);
+				done(response.data,response.took);
 			});
 		
 	}
@@ -1238,7 +1238,9 @@ function Heatmap(options)
 	
 	this.init = function() {
 	
-		var html = '<table width="100%"><tr><th></th>';
+		var html = '<p class="text-center lead">' + this.options.title + '<br/>'; 
+		html += '<small><i>' + this.options.subtitle + '</i></small></p>';
+		html += '<table width="100%"><tr><th></th>';
 		var cat_len = options.categories.length;
 		
 		for (var i=0; i<cat_len; i++)
@@ -1291,12 +1293,14 @@ function Heatmap(options)
 
 }
 
-function draw_heatmap(name,data,render_to,title) {
+function draw_heatmap(name,data,render_to,title,subtitle) {
 	
 		var options = {
 			renderTo : '#' + render_to,
 			categories : [],
-			series : [],
+			series : [], 
+			title: (title || ''),
+			subtitle: (subtitle || '')
 		};
 		
 		$.each(data, function(i,result) {

@@ -473,7 +473,7 @@ function correlate_serie() {
 			if (!slider.has_slide("#correlation-board")) {
 				slider.add_slide("#correlation-board");
 			}
-			draw_heatmap('',data,'correlation-board-hook',current_workspace.name);
+			draw_heatmap('',data,'correlation-board-hook','Recherche de corrélations pour ' + current_workspace.name,data.length + ' corrélations trouvées en ' + took);
 			slider.show('#correlation-board');
 		});
 	}
